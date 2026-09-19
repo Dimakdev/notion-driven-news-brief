@@ -1,36 +1,44 @@
 #!/usr/bin/env python3
-"""Draw workflow.json as an SVG.
+"""Draw workflow.json as SVGs you can actually read.
 
     python scripts/render_graph.py
 
-A screenshot of the n8n canvas goes stale the moment a node moves, and it is a dark picture with the
-node names cut off. This reads the same file the workflow is built from, so the picture cannot drift
-from the graph, it stays readable at any zoom, and it lives in git as text you can diff.
+A screenshot of the n8n canvas goes stale the moment a node moves, and it is a dark picture with half
+the names cut off. These are generated from the same file the workflow is built from, so they cannot
+drift from the graph, they stay sharp at any zoom, and they live in git as text you can diff.
 
-Writes docs/images/workflow.svg and docs/images/workflow-daily.svg (the daily chain on its own).
+Two pictures, because they answer different questions:
+
+  workflow-daily.svg   the daily brief in execution order, wrapped into rows so it fits on a page.
+                       This is the one to look at first.
+  workflow-full.svg    every node at its real position on the canvas, the way n8n lays it out.
+                       Wide, for when you want the whole shape.
 """
 from __future__ import annotations
 
+import collections
 import json
 import pathlib
-import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 OUT = ROOT / "docs" / "images"
 
-# One colour per kind of work, so the shape of the thing is readable before any label is.
+# One colour per kind of work, so the shape reads before any label does.
 COLOURS = {
-    "trigger": ("#2f6f4f", "#d7f0e2"),
+    "trigger": ("#2f6f4f", "#dcf2e6"),
     "code": ("#8a5a00", "#ffeccc"),
-    "http": ("#2b5f9e", "#d9e8fb"),
-    "model": ("#6b3fa0", "#ece0f8"),
-    "telegram": ("#1d7fa8", "#d6f0fa"),
-    "control": ("#5a5f6a", "#e9ebef"),
+    "http": ("#2b5f9e", "#dbe9fb"),
+    "model": ("#6b3fa0", "#eee2f8"),
+    "telegram": ("#1d7fa8", "#d9f1fa"),
+    "control": ("#596070", "#eaecf0"),
 }
-
-BOX_W, BOX_H = 150, 48
-PAD = 90
+LEGEND = {"trigger": "trigger", "http": "Notion / fetch", "code": "code",
+          "model": "model", "telegram": "delivery", "control": "control"}
 FONT = "ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif"
+
+STYLE = ('<style>.bg{fill:#fff}.t{fill:#111827}.s{fill:#6b7280}'
+         '@media (prefers-color-scheme: dark){.bg{fill:#0d1117}.t{fill:#e6edf3}.s{fill:#9198a1}'
+         '.box{filter:brightness(.8) saturate(1.1)}}</style>')
 
 
 def kind(node: dict) -> str:
@@ -49,12 +57,12 @@ def kind(node: dict) -> str:
 
 
 def esc(s: str) -> str:
-    return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+    return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 
-def wrap(name: str, width: int = 19) -> list[str]:
-    words, lines, cur = name.split(), [], ""
-    for w in words:
+def wrap(name: str, width: int) -> list[str]:
+    lines, cur = [], ""
+    for w in name.split():
         if len(cur) + len(w) + 1 <= width:
             cur = f"{cur} {w}".strip()
         else:
@@ -65,100 +73,172 @@ def wrap(name: str, width: int = 19) -> list[str]:
     return lines[:2]
 
 
-def render(nodes: list[dict], connections: dict, title: str, subtitle: str) -> str:
-    pos = {n["name"]: (n["position"][0], n["position"][1]) for n in nodes}
-    xs = [p[0] for p in pos.values()]
-    ys = [p[1] for p in pos.values()]
-    minx, miny = min(xs) - PAD, min(ys) - PAD
-    w = max(xs) - minx + BOX_W + PAD
-    h = max(ys) - miny + BOX_H + PAD + 60
+def legend(parts: list[str], x: float, y: float):
+    for k, label in LEGEND.items():
+        stroke, fill = COLOURS[k]
+        parts.append(f'<rect x="{x}" y="{y}" width="11" height="11" rx="3" fill="{fill}" '
+                     f'stroke="{stroke}" stroke-width="1.4"/>')
+        parts.append(f'<text class="s" x="{x + 17}" y="{y + 9.5}" font-size="11.5">{label}</text>')
+        x += 24 + len(label) * 6.7
 
-    def X(v):
-        return round(v - minx, 1)
 
-    def Y(v):
-        return round(v - miny + 60, 1)
+def order_from(wf: dict, start: str, stop_at: set[str]) -> list[str]:
+    """Execution order, depth first, which is how a person reads a chain."""
+    nodes = {n["name"]: n for n in wf["nodes"]}
+    adj = collections.defaultdict(list)
+    for src, kinds in wf["connections"].items():
+        for kind_, groups in kinds.items():
+            if kind_ != "main":
+                continue
+            for g in groups:
+                for link in g:
+                    if link["node"] in nodes:
+                        adj[src].append(link["node"])
+    out, seen = [], set()
 
-    parts = [
-        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {round(w)} {round(h)}" '
-        f'width="{round(w)}" height="{round(h)}" font-family="{FONT}">',
-        '<style>'
-        '.bg{fill:#ffffff}.t{fill:#111827}.s{fill:#6b7280}'
-        '@media (prefers-color-scheme: dark){.bg{fill:#0d1117}.t{fill:#e6edf3}.s{fill:#9198a1}'
-        '.box{filter:brightness(.82)}.edge{stroke:#6b7280}}'
-        '</style>',
-        f'<rect class="bg" width="{round(w)}" height="{round(h)}"/>',
-        f'<text class="t" x="16" y="30" font-size="19" font-weight="600">{esc(title)}</text>',
-        f'<text class="s" x="16" y="50" font-size="13">{esc(subtitle)}</text>',
-    ]
+    def walk(n):
+        if n in seen or n in stop_at or n not in nodes:
+            return
+        seen.add(n)
+        out.append(n)
+        for nxt in adj.get(n, []):
+            walk(nxt)
 
-    # edges first, so boxes sit on top of them
+    walk(start)
+    return out
+
+
+# ---------------------------------------------------------------- wrapped, readable
+def render_flow(wf: dict, names: list[str], title: str, subtitle: str, per_row: int = 5) -> str:
+    """Lay the chain out in rows instead of one endless line. A README image has to be about as wide
+    as a page, not nine times wider, or every label shrinks into a smudge."""
+    nodes = {n["name"]: n for n in wf["nodes"]}
+    BW, BH, GX, GY, M = 196, 58, 46, 40, 24
+    rows = [names[i:i + per_row] for i in range(0, len(names), per_row)]
+    w = M * 2 + per_row * BW + (per_row - 1) * GX
+    h = 92 + len(rows) * (BH + GY) + 30
+
+    p = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" '
+         f'font-family="{FONT}">', STYLE,
+         f'<rect class="bg" width="{w}" height="{h}"/>',
+         f'<text class="t" x="{M}" y="34" font-size="20" font-weight="600">{esc(title)}</text>',
+         f'<text class="s" x="{M}" y="56" font-size="13">{esc(subtitle)}</text>']
+
+    pos = {}
+    for r, row in enumerate(rows):
+        for c, name in enumerate(row):
+            pos[name] = (M + c * (BW + GX), 92 + r * (BH + GY))
+
+    for i, name in enumerate(names[:-1]):
+        x1, y1 = pos[name]
+        x2, y2 = pos[names[i + 1]]
+        if y1 == y2:                                   # same row: straight across
+            p.append(f'<path d="M{x1 + BW},{y1 + BH / 2} L{x2 - 8},{y2 + BH / 2}" fill="none" '
+                     f'stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>')
+        else:                                          # wrap: down the right, back along the left
+            p.append(f'<path d="M{x1 + BW / 2},{y1 + BH} L{x1 + BW / 2},{y1 + BH + GY / 2} '
+                     f'L{x2 + BW / 2},{y1 + BH + GY / 2} L{x2 + BW / 2},{y2 - 8}" fill="none" '
+                     f'stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>')
+
+    p.insert(2, '<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" '
+                'markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/>'
+                '</marker></defs>')
+
+    for i, name in enumerate(names, 1):
+        n = nodes[name]
+        stroke, fill = COLOURS[kind(n)]
+        x, y = pos[name]
+        p.append(f'<rect class="box" x="{x}" y="{y}" width="{BW}" height="{BH}" rx="9" fill="{fill}" '
+                 f'stroke="{stroke}" stroke-width="1.7"/>')
+        p.append(f'<text x="{x + 9}" y="{y + 15}" font-size="10" fill="{stroke}" opacity=".65">{i}</text>')
+        lines = wrap(name, 24)
+        top = y + BH / 2 - (len(lines) - 1) * 7.5 + 4
+        for j, line in enumerate(lines):
+            p.append(f'<text x="{x + BW / 2}" y="{top + j * 15}" text-anchor="middle" font-size="12.5" '
+                     f'fill="{stroke}" font-weight="600">{esc(line)}</text>')
+
+    legend(p, M, h - 24)
+    p.append("</svg>")
+    return "\n".join(p)
+
+
+# ---------------------------------------------------------------- faithful to the canvas
+def render_canvas(wf: dict, title: str, subtitle: str) -> str:
+    nodes = [n for n in wf["nodes"] if not n["type"].endswith("stickyNote")]
+    BW, BH, PAD = 150, 48, 90
+    pos = {n["name"]: tuple(n["position"]) for n in nodes}
+    minx = min(p[0] for p in pos.values()) - PAD
+    miny = min(p[1] for p in pos.values()) - PAD
+    w = max(p[0] for p in pos.values()) - minx + BW + PAD
+    h = max(p[1] for p in pos.values()) - miny + BH + PAD + 70
+
+    X = lambda v: round(v - minx, 1)
+    Y = lambda v: round(v - miny + 60, 1)
+
+    p = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {round(w)} {round(h)}" '
+         f'width="{round(w)}" height="{round(h)}" font-family="{FONT}">', STYLE,
+         f'<rect class="bg" width="{round(w)}" height="{round(h)}"/>',
+         f'<text class="t" x="16" y="32" font-size="20" font-weight="600">{esc(title)}</text>',
+         f'<text class="s" x="16" y="52" font-size="13">{esc(subtitle)}</text>']
+
     names = set(pos)
-    for src, kinds in connections.items():
+    for src, kinds in wf["connections"].items():
         if src not in names:
             continue
         for groups in kinds.values():
-            for group in groups:
-                for link in group:
-                    dst = link["node"]
-                    if dst not in names:
+            for g in groups:
+                for link in g:
+                    if link["node"] not in names:
                         continue
-                    x1, y1 = X(pos[src][0]) + BOX_W, Y(pos[src][1]) + BOX_H / 2
-                    x2, y2 = X(pos[dst][0]), Y(pos[dst][1]) + BOX_H / 2
+                    x1, y1 = X(pos[src][0]) + BW, Y(pos[src][1]) + BH / 2
+                    x2, y2 = X(pos[link["node"]][0]), Y(pos[link["node"]][1]) + BH / 2
                     mid = (x1 + x2) / 2
-                    parts.append(
-                        f'<path class="edge" d="M{x1},{y1} C{mid},{y1} {mid},{y2} {x2},{y2}" '
-                        f'fill="none" stroke="#9aa4b2" stroke-width="1.6" opacity=".85"/>')
+                    p.append(f'<path d="M{x1},{y1} C{mid},{y1} {mid},{y2} {x2},{y2}" fill="none" '
+                             f'stroke="#9aa4b2" stroke-width="1.6" opacity=".8"/>')
 
     for n in nodes:
-        k = kind(n)
-        stroke, fill = COLOURS[k]
+        stroke, fill = COLOURS[kind(n)]
         x, y = X(pos[n["name"]][0]), Y(pos[n["name"]][1])
-        parts.append(
-            f'<rect class="box" x="{x}" y="{y}" width="{BOX_W}" height="{BOX_H}" rx="8" '
-            f'fill="{fill}" stroke="{stroke}" stroke-width="1.6"/>')
-        lines = wrap(n["name"])
-        top = y + (BOX_H / 2) - (len(lines) - 1) * 7 + 4
+        p.append(f'<rect class="box" x="{x}" y="{y}" width="{BW}" height="{BH}" rx="8" fill="{fill}" '
+                 f'stroke="{stroke}" stroke-width="1.6"/>')
+        lines = wrap(n["name"], 19)
+        top = y + BH / 2 - (len(lines) - 1) * 7 + 4
         for i, line in enumerate(lines):
-            parts.append(
-                f'<text x="{x + BOX_W / 2}" y="{top + i * 14}" text-anchor="middle" '
-                f'font-size="11.5" fill="{stroke}" font-weight="600">{esc(line)}</text>')
+            p.append(f'<text x="{x + BW / 2}" y="{top + i * 14}" text-anchor="middle" font-size="11.5" '
+                     f'fill="{stroke}" font-weight="600">{esc(line)}</text>')
 
-    # legend
-    lx = 16
-    for k, (stroke, fill) in COLOURS.items():
-        parts.append(f'<rect x="{lx}" y="{h - 26}" width="11" height="11" rx="3" fill="{fill}" '
-                     f'stroke="{stroke}" stroke-width="1.4"/>')
-        label = {"http": "Notion / fetch", "model": "model", "code": "code",
-                 "trigger": "trigger", "telegram": "delivery", "control": "control"}[k]
-        parts.append(f'<text class="s" x="{lx + 17}" y="{h - 17}" font-size="11.5">{label}</text>')
-        lx += 22 + len(label) * 6.6
-
-    parts.append("</svg>")
-    return "\n".join(parts)
+    legend(p, 16, h - 26)
+    p.append("</svg>")
+    return "\n".join(p)
 
 
 def main():
     wf = json.loads((ROOT / "workflow.json").read_text(encoding="utf-8"))
-    nodes = [n for n in wf["nodes"] if not n["type"].endswith("stickyNote")]
     OUT.mkdir(parents=True, exist_ok=True)
+    total = len([n for n in wf["nodes"] if not n["type"].endswith("stickyNote")])
 
-    full = render(nodes, wf["connections"], "Notion-driven news brief",
-                  f"{len(nodes)} nodes. Generated from workflow.json by scripts/render_graph.py")
-    (OUT / "workflow.svg").write_text(full, encoding="utf-8")
-
-    # The daily chain on its own: the part anyone reading the README actually wants to follow.
-    daily = [n for n in nodes if n["position"][1] < 400 and n["position"][0] < 6100]
-    keep = {n["name"] for n in daily}
-    conns = {s: {k: [[l for l in g if l["node"] in keep] for g in gs] for k, gs in ks.items()}
-             for s, ks in wf["connections"].items() if s in keep}
+    # the daily chain only: stop before the branches that hang off the same gate
+    daily = order_from(wf, "Every hour", stop_at={"Review day?", "Attach source (bad)",
+                                                  "Fetch feed (json)"})
     (OUT / "workflow-daily.svg").write_text(
-        render(daily, conns, "The daily brief, end to end",
-               "Settings gate, fetch, two-stage filter, write-up, delivery, memory, log"),
+        render_flow(wf, daily, "The daily brief, in the order it runs",
+                    "Read from the gate to the log. The json lane and the failure lane rejoin at "
+                    "Feeds; the weekly review hangs off the same gate."),
         encoding="utf-8")
 
-    for f in ("workflow.svg", "workflow-daily.svg"):
-        print(f"docs/images/{f}  {(OUT / f).stat().st_size // 1024} KB")
+    (OUT / "workflow-full.svg").write_text(
+        render_canvas(wf, "All of it",
+                      f"{total} nodes as n8n lays them out. Daily brief, link redirector, "
+                      f"source discovery, weekly review."),
+        encoding="utf-8")
+
+    old = OUT / "workflow.svg"
+    if old.exists():
+        old.unlink()
+
+    for f in ("workflow-daily.svg", "workflow-full.svg"):
+        kb = (OUT / f).stat().st_size // 1024
+        print(f"docs/images/{f}  {kb} KB")
 
 
 if __name__ == "__main__":

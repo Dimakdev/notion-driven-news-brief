@@ -20,6 +20,10 @@ Now changing my mind is editing a row.
                         write it up --> Telegram --> archive --> remember --> log the run
 ```
 
+And here is the same thing as it actually runs, drawn from `workflow.json`:
+
+![The daily brief, in the order it runs](docs/images/workflow-daily.svg)
+
 ## How a morning goes
 
 The workflow wakes up every hour, reads the Settings table, and goes back to sleep unless it is the
@@ -122,6 +126,12 @@ and you only find that out by fetching them.
 
 By branch it is 40 for the daily brief, 18 for source discovery, 9 for the weekly review and 7 for
 the link redirector. If you only want the brief, the rest can be deleted and it will still run.
+
+![All of it](docs/images/workflow-full.svg)
+
+Both pictures come from `scripts/render_graph.py`, which reads `workflow.json`. Run it after you
+change a node and they stay true. A screenshot of the n8n canvas would be out of date the moment
+anything moved.
 
 ## Setting it up
 
