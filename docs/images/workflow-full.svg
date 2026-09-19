@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 6710 1978" width="6710" height="1978" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
 <style>.bg{fill:#fff}.t{fill:#111827}.s{fill:#6b7280}@media (prefers-color-scheme: dark){.bg{fill:#0d1117}.t{fill:#e6edf3}.s{fill:#9198a1}.box{filter:brightness(.8) saturate(1.1)}}</style>
-<rect class="bg" width="6710" height="1978"/>
-<text class="t" x="16" y="32" font-size="20" font-weight="600">All of it</text>
-<text class="s" x="16" y="52" font-size="13">75 nodes as n8n lays them out. Daily brief, link redirector, source discovery, weekly review.</text>
+<rect class="bg" width="6710" height="1978" fill="#ffffff"/>
+<text class="t" x="16" y="32" font-size="20" font-weight="600" fill="#111827">All of it</text>
+<text class="s" x="16" y="52" font-size="13" fill="#6b7280">75 nodes as n8n lays them out. Daily brief, link redirector, source discovery, weekly review.</text>
 <path d="M240,434.0 C275.0,434.0 275.0,434.0 310,434.0" fill="none" stroke="#9aa4b2" stroke-width="1.6" opacity=".8"/>
 <path d="M240,214.0 C275.0,214.0 275.0,434.0 310,434.0" fill="none" stroke="#9aa4b2" stroke-width="1.6" opacity=".8"/>
 <path d="M460,434.0 C495.0,434.0 495.0,434.0 530,434.0" fill="none" stroke="#9aa4b2" stroke-width="1.6" opacity=".8"/>
@@ -238,15 +238,15 @@
 <rect class="box" x="2290" y="710" width="150" height="48" rx="8" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.6"/>
 <text x="2365.0" y="738.0" text-anchor="middle" font-size="11.5" fill="#2b5f9e" font-weight="600">Notion: write flag</text>
 <rect x="16" y="1952" width="11" height="11" rx="3" fill="#dcf2e6" stroke="#2f6f4f" stroke-width="1.4"/>
-<text class="s" x="33" y="1961.5" font-size="11.5">trigger</text>
+<text class="s" x="33" y="1961.5" font-size="11.5" fill="#6b7280">trigger</text>
 <rect x="86.9" y="1952" width="11" height="11" rx="3" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.4"/>
-<text class="s" x="103.9" y="1961.5" font-size="11.5">Notion / fetch</text>
+<text class="s" x="103.9" y="1961.5" font-size="11.5" fill="#6b7280">Notion / fetch</text>
 <rect x="204.7" y="1952" width="11" height="11" rx="3" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.4"/>
-<text class="s" x="221.7" y="1961.5" font-size="11.5">code</text>
+<text class="s" x="221.7" y="1961.5" font-size="11.5" fill="#6b7280">code</text>
 <rect x="255.5" y="1952" width="11" height="11" rx="3" fill="#eee2f8" stroke="#6b3fa0" stroke-width="1.4"/>
-<text class="s" x="272.5" y="1961.5" font-size="11.5">model</text>
+<text class="s" x="272.5" y="1961.5" font-size="11.5" fill="#6b7280">model</text>
 <rect x="313.0" y="1952" width="11" height="11" rx="3" fill="#d9f1fa" stroke="#1d7fa8" stroke-width="1.4"/>
-<text class="s" x="330.0" y="1961.5" font-size="11.5">delivery</text>
+<text class="s" x="330.0" y="1961.5" font-size="11.5" fill="#6b7280">delivery</text>
 <rect x="390.6" y="1952" width="11" height="11" rx="3" fill="#eaecf0" stroke="#596070" stroke-width="1.4"/>
-<text class="s" x="407.6" y="1961.5" font-size="11.5">control</text>
+<text class="s" x="407.6" y="1961.5" font-size="11.5" fill="#6b7280">control</text>
 </svg>

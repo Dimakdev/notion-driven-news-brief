@@ -1,9 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1212 808" width="1212" height="808" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
 <style>.bg{fill:#fff}.t{fill:#111827}.s{fill:#6b7280}@media (prefers-color-scheme: dark){.bg{fill:#0d1117}.t{fill:#e6edf3}.s{fill:#9198a1}.box{filter:brightness(.8) saturate(1.1)}}</style>
 <defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs>
-<rect class="bg" width="1212" height="808"/>
-<text class="t" x="24" y="34" font-size="20" font-weight="600">The daily brief, in the order it runs</text>
-<text class="s" x="24" y="56" font-size="13">Read from the gate to the log. The json lane and the failure lane rejoin at Feeds; the weekly review hangs off the same gate.</text>
+<rect class="bg" width="1212" height="808" fill="#ffffff"/>
+<text class="t" x="24" y="34" font-size="20" font-weight="600" fill="#111827">The daily brief, in the order it runs</text>
+<text class="s" x="24" y="56" font-size="13" fill="#6b7280">Read from the gate to the log. The json lane and the failure lane rejoin at Feeds; the weekly review hangs off the same gate.</text>
 <path d="M220,121.0 L258,121.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
 <path d="M462,121.0 L500,121.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
 <path d="M704,121.0 L742,121.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
@@ -140,15 +140,15 @@
 <text x="759" y="695" font-size="10" fill="#2b5f9e" opacity=".65">34</text>
 <text x="848.0" y="713.0" text-anchor="middle" font-size="12.5" fill="#2b5f9e" font-weight="600">Notion: update source</text>
 <rect x="24" y="784" width="11" height="11" rx="3" fill="#dcf2e6" stroke="#2f6f4f" stroke-width="1.4"/>
-<text class="s" x="41" y="793.5" font-size="11.5">trigger</text>
+<text class="s" x="41" y="793.5" font-size="11.5" fill="#6b7280">trigger</text>
 <rect x="94.9" y="784" width="11" height="11" rx="3" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.4"/>
-<text class="s" x="111.9" y="793.5" font-size="11.5">Notion / fetch</text>
+<text class="s" x="111.9" y="793.5" font-size="11.5" fill="#6b7280">Notion / fetch</text>
 <rect x="212.7" y="784" width="11" height="11" rx="3" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.4"/>
-<text class="s" x="229.7" y="793.5" font-size="11.5">code</text>
+<text class="s" x="229.7" y="793.5" font-size="11.5" fill="#6b7280">code</text>
 <rect x="263.5" y="784" width="11" height="11" rx="3" fill="#eee2f8" stroke="#6b3fa0" stroke-width="1.4"/>
-<text class="s" x="280.5" y="793.5" font-size="11.5">model</text>
+<text class="s" x="280.5" y="793.5" font-size="11.5" fill="#6b7280">model</text>
 <rect x="321.0" y="784" width="11" height="11" rx="3" fill="#d9f1fa" stroke="#1d7fa8" stroke-width="1.4"/>
-<text class="s" x="338.0" y="793.5" font-size="11.5">delivery</text>
+<text class="s" x="338.0" y="793.5" font-size="11.5" fill="#6b7280">delivery</text>
 <rect x="398.6" y="784" width="11" height="11" rx="3" fill="#eaecf0" stroke="#596070" stroke-width="1.4"/>
-<text class="s" x="415.6" y="793.5" font-size="11.5">control</text>
+<text class="s" x="415.6" y="793.5" font-size="11.5" fill="#6b7280">control</text>
 </svg>

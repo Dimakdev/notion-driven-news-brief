@@ -36,6 +36,8 @@ LEGEND = {"trigger": "trigger", "http": "Notion / fetch", "code": "code",
           "model": "model", "telegram": "delivery", "control": "control"}
 FONT = "ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif"
 
+# The classes are a bonus for dark mode. Every element also carries an explicit fill, because a
+# renderer that drops the <style> block would otherwise leave a diagram with no background at all.
 STYLE = ('<style>.bg{fill:#fff}.t{fill:#111827}.s{fill:#6b7280}'
          '@media (prefers-color-scheme: dark){.bg{fill:#0d1117}.t{fill:#e6edf3}.s{fill:#9198a1}'
          '.box{filter:brightness(.8) saturate(1.1)}}</style>')
@@ -78,7 +80,7 @@ def legend(parts: list[str], x: float, y: float):
         stroke, fill = COLOURS[k]
         parts.append(f'<rect x="{x}" y="{y}" width="11" height="11" rx="3" fill="{fill}" '
                      f'stroke="{stroke}" stroke-width="1.4"/>')
-        parts.append(f'<text class="s" x="{x + 17}" y="{y + 9.5}" font-size="11.5">{label}</text>')
+        parts.append(f'<text class="s" x="{x + 17}" y="{y + 9.5}" font-size="11.5" fill="#6b7280">{label}</text>')
         x += 24 + len(label) * 6.7
 
 
@@ -120,9 +122,9 @@ def render_flow(wf: dict, names: list[str], title: str, subtitle: str, per_row: 
 
     p = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" '
          f'font-family="{FONT}">', STYLE,
-         f'<rect class="bg" width="{w}" height="{h}"/>',
-         f'<text class="t" x="{M}" y="34" font-size="20" font-weight="600">{esc(title)}</text>',
-         f'<text class="s" x="{M}" y="56" font-size="13">{esc(subtitle)}</text>']
+         f'<rect class="bg" width="{w}" height="{h}" fill="#ffffff"/>',
+         f'<text class="t" x="{M}" y="34" font-size="20" font-weight="600" fill="#111827">{esc(title)}</text>',
+         f'<text class="s" x="{M}" y="56" font-size="13" fill="#6b7280">{esc(subtitle)}</text>']
 
     pos = {}
     for r, row in enumerate(rows):
@@ -177,9 +179,9 @@ def render_canvas(wf: dict, title: str, subtitle: str) -> str:
 
     p = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {round(w)} {round(h)}" '
          f'width="{round(w)}" height="{round(h)}" font-family="{FONT}">', STYLE,
-         f'<rect class="bg" width="{round(w)}" height="{round(h)}"/>',
-         f'<text class="t" x="16" y="32" font-size="20" font-weight="600">{esc(title)}</text>',
-         f'<text class="s" x="16" y="52" font-size="13">{esc(subtitle)}</text>']
+         f'<rect class="bg" width="{round(w)}" height="{round(h)}" fill="#ffffff"/>',
+         f'<text class="t" x="16" y="32" font-size="20" font-weight="600" fill="#111827">{esc(title)}</text>',
+         f'<text class="s" x="16" y="52" font-size="13" fill="#6b7280">{esc(subtitle)}</text>']
 
     names = set(pos)
     for src, kinds in wf["connections"].items():
