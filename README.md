@@ -96,7 +96,7 @@ and you only find that out by fetching them.
 |---|---|
 | `workflow.json` | the workflow, 79 nodes, ready to import, no secrets in it |
 | `error-workflow.json` | the error handler. One alert per crash with the node and execution id |
-| `src/nodes/` | 28 JavaScript files, one per Code node. This is the part worth reading |
+| `src/nodes/` | 28 JavaScript files behind the 29 Code nodes. This is the part worth reading |
 | `schema/notion.json` | the six databases as data, so they can be rebuilt anywhere |
 | `scripts/deploy.py` | makes the databases and credentials, imports and activates both workflows |
 | `scripts/seed_notion.py` | three example topics and two sources, enough to see it work |
