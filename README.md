@@ -107,6 +107,22 @@ and you only find that out by fetching them.
 | `LIMITATIONS.md` | what it does not do |
 | `docker-compose.yml` | a minimal n8n if you do not have one |
 
+### About that node count
+
+79 sounds like a lot. It is mostly n8n being verbose, so here is the honest split:
+
+- **25** Code nodes doing the actual work, about 1,900 lines between them
+- **20** HTTP nodes, each one a single API call
+- **9** for the model: three calls, and n8n wants a separate node for the model and another for the
+  output schema on each
+- **8** for flow control, **6** triggers, **3** for delivery
+- **4** sticky notes, which are comments on the canvas
+- **4** Code nodes that exist only to turn an array into items, because that is how you write a
+  `for` loop here
+
+By branch it is 40 for the daily brief, 18 for source discovery, 9 for the weekly review and 7 for
+the link redirector. If you only want the brief, the rest can be deleted and it will still run.
+
 ## Setting it up
 
 ```bash
@@ -127,7 +143,7 @@ Do not skip connecting the integration to the page. If you do, the token is perf
 single query comes back `404 object_not_found`, which looks exactly like you typed the wrong id. I
 lost an hour to that.
 
-Add a Gemini key from <https://aistudio.google.com/apikey> and a bot token from @BotFather, then:
+Add a Gemini key from <https://aistudio.google.com/apikey>, then:
 
 ```bash
 python scripts/deploy.py --create-databases
@@ -138,10 +154,74 @@ python scripts/seed_notion.py
 itself on purpose. A script that edits the file holding all your keys is a script you should have to
 read carefully first.
 
-Message your bot once, run `python scripts/telegram_chat_id.py` for the chat id, put that in `.env`
-too, and run `deploy.py` again.
+For the Telegram side, see the section below. It needs two values and one of them takes a minute to
+get.
 
-### Trying it without waiting until tomorrow
+## Telegram
+
+Make a bot with [@BotFather](https://t.me/BotFather): send `/newbot`, pick a name, and he gives you a
+token. Put that in `TELEGRAM_BOT_TOKEN`.
+
+Use a bot of its own rather than one you already have. Telegram only lets one thing own a bot's
+webhook, so sharing a bot with another workflow means one of them stops getting updates, usually
+without saying so.
+
+Then message your new bot once, anything at all, and run:
+
+```bash
+python scripts/telegram_chat_id.py
+```
+
+It prints `TELEGRAM_CHAT_ID=...`. Put that in `.env` and run `deploy.py` again so the nodes pick it
+up. If the script comes back empty, send the bot another message. Telegram only keeps updates for 24
+hours, and it stops serving them entirely once a webhook is registered on that bot.
+
+The brief itself is a plain message and works on any setup. Everything else Telegram-related needs the
+next section.
+
+## The public address question
+
+Short version: **the brief works fine on localhost. Two extras do not.**
+
+| | Works on localhost | Needs a public address |
+|---|---|---|
+| The daily brief in Telegram | yes | |
+| The archive and the run log in Notion | yes | |
+| Source discovery | yes | |
+| The weekly review | yes | |
+| Counting which links you open | | yes |
+| Telegram callback buttons | | yes |
+
+Here is why. Every link in the brief normally points at your own n8n, which records the click and
+immediately sends you on to the article. On localhost that address means nothing to your phone, and
+Telegram will not even render a `localhost` href as a link, so you would get the words "read the
+original" with nothing behind them.
+
+The workflow checks for this instead of pretending. If the `n8n address` row in `Settings` is not a
+public address, it drops the wrapper and links go straight to the article. You lose the click
+counter, you keep the reading, and the run log says tracking was off. Nothing breaks and nothing
+lies to you.
+
+The Telegram Trigger node is a harder case: n8n cannot even *activate* it against a private address,
+because Telegram refuses to register the webhook and n8n then rolls back the activation of the whole
+workflow. So it ships disabled. Everything else runs without it.
+
+### If you want those two things
+
+Put n8n somewhere reachable over HTTPS. A tunnel is the quickest way in
+([Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
+is free and does not need an open port; ngrok works too), or put it on a small VPS behind a reverse
+proxy. Then:
+
+1. set `WEBHOOK_URL` in `docker-compose.yml` to that address and restart the container;
+2. change the `n8n address` row in `Settings` to the same address. That one takes effect on the next
+   run, with no redeploy and no rebuild, because the workflow reads it from the database;
+3. open the workflow in n8n, enable the `Telegram button` node, and save.
+
+Your address never goes into this repository. It lives in that one Notion row and in your own
+`docker-compose.yml`, both of which stay on your machine.
+
+## Trying it without waiting until tomorrow
 
 ```bash
 curl -X POST http://localhost:5678/webhook/run-now
@@ -151,7 +231,7 @@ curl -X POST http://localhost:5678/webhook/find-sources
 Both of these started life as test hooks and stayed, because "give me the brief now" turns out to be
 something I want.
 
-### Checking it works
+## Checking it works
 
 ```bash
 python scripts/run_tests.py
@@ -160,20 +240,6 @@ python scripts/run_tests.py
 It reads your control panel, fetches every live source for real, runs the whole chain and prints the
 funnel, checks the memory is actually filling up, and makes sure the link redirector sends a real hash
 to its article and a made-up one somewhere harmless.
-
-### About the links
-
-Links in the brief go through your own n8n so the click can be counted. On plain localhost that cannot
-work, and Telegram will not even turn a localhost address into a link, so you get the words with
-nothing behind them.
-
-The workflow checks for this instead of pretending. If the `n8n address` setting is not public, links
-point straight at the article and the run log notes that tracking is off. Put n8n somewhere reachable,
-change that one row, and the wrapper comes back on. No redeploy.
-
-Telegram's buttons need the same thing. n8n cannot even activate a Telegram Trigger against localhost
-because Telegram refuses to register the webhook, so that node ships disabled and everything else
-works without it.
 
 ## Changing things
 
