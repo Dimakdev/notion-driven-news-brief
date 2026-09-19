@@ -60,7 +60,7 @@ JUDGE_SCHEMA = {
                               "description": "How well the article matches that topic's stated wants. "
                                              "Judge the match, never the article's quality or importance in general."},
                     "reason": {"type": "string", "maxLength": 200,
-                               "description": "Short phrase naming what matched, in Ukrainian."},
+                               "description": "Short phrase naming what matched, in the reader s language."},
                 },
                 "required": ["i", "topic_id", "score", "reason"],
                 "additionalProperties": False,
@@ -80,7 +80,7 @@ WRITER_SCHEMA = {
                 "type": "object",
                 "properties": {
                     "i": {"type": "integer", "description": "The #number of the article, as given."},
-                    "title_uk": {"type": "string", "description": "The headline in natural Ukrainian, not a literal translation."},
+                    "title_uk": {"type": "string", "description": "The headline in the reader s language, natural rather than literal."},
                     "summary_uk": {"type": "string",
                                    "description": "Two or three sentences carrying the actual insight, "
                                                   "not a rephrasing of the headline."},
@@ -110,22 +110,23 @@ ARTICLES
 {articles}
 
 For every article return one verdict: the id of the topic it fits best, a score from 0 to 100 for how
-well it fits that topic's stated wants, and a short phrase in Ukrainian naming what matched.
+well it fits that topic's stated wants, and a short phrase naming what matched, in {language}.
 
 Return topic_id as an empty string and score 0 when the article fits none of the topics. Do not stretch
 to find a match, and do not aim for any particular number of high scores — some days most articles score
 low and that is the correct answer."""
 
-WRITER_PROMPT = """You write a short morning digest in Ukrainian for one reader.
+WRITER_PROMPT = """You write a short morning digest for one reader, in {language}.
 
-Tone: dry and direct. No marketing adjectives, no "захоплюючий", "революційний", "проривний". If an
-article matters, say what changed. If it is dull, describe it plainly — you are not selling it.
+Tone: dry and direct. No marketing adjectives: nothing is "exciting", "revolutionary" or "a game
+changer". If an article matters, say what changed. If it is dull, describe it plainly - you are not
+selling it.
 
 ARTICLES
 {articles}
 
 For each article give:
-- title_uk: the headline in natural Ukrainian, not a word-for-word translation
+- title_uk: the headline in {language}, natural rather than word-for-word
 - summary_uk: two or three sentences carrying the actual insight, not a restatement of the headline
 - why: one line on what it changes for the reader, and ONLY when that line is honest. Leave it empty
   rather than forcing a connection — a forced "why it matters" teaches the reader to skip the section."""
@@ -144,7 +145,7 @@ PROPOSE_SCHEMA = {
                                            "/feed, /rss, /atom.xml or similar."},
                     "type": {"type": "string", "enum": ["rss", "atom", "youtube", "reddit", "hn", "json"]},
                     "why": {"type": "string", "maxLength": 200,
-                            "description": "One line, in Ukrainian, on why this fits the topic."},
+                            "description": "One line on why this fits the topic, in the reader s language."},
                 },
                 "required": ["name", "url", "type", "why"],
                 "additionalProperties": False,
@@ -386,7 +387,8 @@ def build_main(provider: str) -> dict:
     n.append(node("Judge relevance", "@n8n/n8n-nodes-langchain.chainLlm",
                   {"promptType": "define",
                    "text": "=" + JUDGE_PROMPT.replace("{topics}", "{{ $json.prompt_topics }}")
-                                             .replace("{articles}", "{{ $json.prompt_articles }}"),
+                                             .replace("{articles}", "{{ $json.prompt_articles }}")
+                                             .replace("{language}", "{{ $json.prompt_language }}"),
                    "hasOutputParser": True, "batching": {}}, (2520, 0), 1.7))
     # A model that answers off-schema is a Tuesday, not an emergency. One retry catches most of it;
     # what still fails is counted as `no_verdict` in [9] and named in the run row, and the rest of the
@@ -400,7 +402,8 @@ def build_main(provider: str) -> dict:
     n.append(code_node("Build writer input", "build_writer_input", (2960, 0)))
     n.append(node("Write digest", "@n8n/n8n-nodes-langchain.chainLlm",
                   {"promptType": "define",
-                   "text": "=" + WRITER_PROMPT.replace("{articles}", "{{ $json.prompt_articles }}"),
+                   "text": "=" + WRITER_PROMPT.replace("{articles}", "{{ $json.prompt_articles }}")
+                                              .replace("{language}", "{{ $json.prompt_language }}"),
                    "hasOutputParser": True, "batching": {}}, (3180, 0), 1.7))
     # Same here, and cheaper to lose: when the write-up fails the item still ships under its original
     # headline. A missing paragraph is a smaller loss than a missing article.
@@ -469,7 +472,7 @@ def build_main(provider: str) -> dict:
     n.append(code_node("Route webhook", "route_webhook", (-340, 720)))
     n.append(notion_http("Notion: find item", "POST", f"https://api.notion.com/v1/databases/{PH['feed']}/query",
                          (-120, 720),
-                         body='={{ JSON.stringify({ page_size: 1, filter: { property: "Хеш", '
+                         body='={{ JSON.stringify({ page_size: 1, filter: { property: "Hash", '
                               'rich_text: { equals: $json.hash } } }) }}'))
     n.append(code_node("Resolve target", "resolve_target", (100, 720)))
     n.append(notion_http("Notion: mark opened", "PATCH", "=https://api.notion.com/v1/pages/{{ $json.page_id }}",
@@ -497,6 +500,9 @@ def build_main(provider: str) -> dict:
                   (-560, 1200), 1.2))
     n.append(notion_http("Notion: Topics (discovery)", "POST",
                          f"https://api.notion.com/v1/databases/{PH['topics']}/query", (-340, 1200),
+                         body='={"page_size": 100}'))
+    n.append(notion_http("Notion: Settings (discovery)", "POST",
+                         f"https://api.notion.com/v1/databases/{PH['settings']}/query", (-230, 1200),
                          body='={"page_size": 100}'))
     n.append(notion_http("Notion: Sources (discovery)", "POST",
                          f"https://api.notion.com/v1/databases/{PH['sources']}/query", (-120, 1200),
@@ -538,7 +544,7 @@ def build_main(provider: str) -> dict:
     n.append(code_node("Split topics to clear", "split_topics_to_clear", (1860, 1200)))
     n.append(notion_http("Notion: clear checkbox", "PATCH",
                          "=https://api.notion.com/v1/pages/{{ $json.page_id }}", (2080, 1200),
-                         body='={{ JSON.stringify({ properties: { "🔍 Знайти джерела": { checkbox: false } } }) }}',
+                         body='={{ JSON.stringify({ properties: { "Find sources": { checkbox: false } } }) }}',
                          on_error="continueRegularOutput"))
     n.append(node("Report discovery", "n8n-nodes-base.telegram",
                   {"chatId": f"={PH['chat']}",
@@ -555,7 +561,8 @@ def build_main(provider: str) -> dict:
 
     connect("Every 15 min", "Notion: Topics (discovery)")
     connect("Find sources now", "Notion: Topics (discovery)")
-    connect("Notion: Topics (discovery)", "Notion: Sources (discovery)")
+    connect("Notion: Topics (discovery)", "Notion: Settings (discovery)")
+    connect("Notion: Settings (discovery)", "Notion: Sources (discovery)")
     connect("Notion: Sources (discovery)", "Build discovery input")
     connect("Build discovery input", "Propose sources")
     connect("Model: proposer", "Propose sources", kind="ai_languageModel")
@@ -581,7 +588,7 @@ def build_main(provider: str) -> dict:
                                   "combinator": "and"}, "options": {}}, (100, 300), 2))
     n.append(notion_http("Notion: week", "POST",
                          f"https://api.notion.com/v1/databases/{PH['feed']}/query", (320, 300),
-                         body='={{ JSON.stringify({ page_size: 100, filter: { property: "Дата брифу", '
+                         body='={{ JSON.stringify({ page_size: 100, filter: { property: "Brief date", '
                               'date: { past_week: {} } } }) }}'))
     n.append(code_node("Weekly review", "weekly_review", (540, 300)))
     n.append(node("Anything to ask?", "n8n-nodes-base.if",
@@ -598,8 +605,8 @@ def build_main(provider: str) -> dict:
                   (980, 300), 1.2, CRED["telegram"]))
     n.append(notion_http("Notion: reset review flag", "POST",
                          f"https://api.notion.com/v1/databases/{PH['settings']}/query", (1200, 300),
-                         body='={{ JSON.stringify({ page_size: 1, filter: { property: "Ключ", '
-                              'title: { equals: "Розбір зараз" } } }) }}', on_error="continueRegularOutput"))
+                         body='={{ JSON.stringify({ page_size: 1, filter: { property: "Key", '
+                              'title: { equals: "Review now" } } }) }}', on_error="continueRegularOutput"))
     n.append(code_node("Clear review flag", "clear_review_flag", (1420, 300)))
     n.append(notion_http("Notion: write flag", "PATCH",
                          "=https://api.notion.com/v1/pages/{{ $json.page_id }}", (1640, 300),

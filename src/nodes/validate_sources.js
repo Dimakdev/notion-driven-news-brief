@@ -16,13 +16,13 @@ const all = $input.all();
 for (let i = 0; i < all.length; i++) {
   const j = all[i].json;
   const c = proposals[i] || j._candidate || {};
-  const verdict = { name: c.name || '(без назви)', url: c.url || '', type: c.type || 'rss',
+  const verdict = { name: c.name || '(unnamed)', url: c.url || '', type: c.type || 'rss',
                     topic_id: c.topic_id, topic_page_id: c.topic_page_id, why: c.why || '' };
 
   // 1. did it answer at all
   const status = Number(j.statusCode ?? j.status ?? 200);
   if (j._fetch_failed || status >= 400) {
-    results.push({ ...verdict, ok: false, rejected: `не відповідає: ${j._fetch_error || 'HTTP ' + status}` });
+    results.push({ ...verdict, ok: false, rejected: `no answer: ${j._fetch_error || 'HTTP ' + status}` });
     continue;
   }
 
@@ -31,18 +31,18 @@ for (let i = 0; i < all.length; i++) {
   // whole discovery run with it — the same failure a dead feed caused on the daily path.
   const raw = String(j.data ?? j.body ?? '');
   if (/^\s*(<!doctype html|<html)/i.test(raw.trim())) {
-    results.push({ ...verdict, ok: false, rejected: 'не фід: віддає HTML-сторінку' });
+    results.push({ ...verdict, ok: false, rejected: 'not a feed: serves an HTML page' });
     continue;
   }
   const list = raw.match(/<item[\s>]|<entry[\s>]/gi) || [];
   if (list.length < MIN_ITEMS) {
-    results.push({ ...verdict, ok: false, rejected: `не схоже на фід: ${list.length} записів` });
+    results.push({ ...verdict, ok: false, rejected: `does not look like a feed: ${list.length} entries` });
     continue;
   }
 
   // 3. is it still alive
   // The capture keeps its closing '<', and a lone '<' is not a tag, so stripping tags alone leaves it
-  // on the end and every date fails to parse. It showed up as "останній без дати" on six live feeds.
+  // on the end and every date fails to parse. It showed up as "last: undated" on six live feeds.
   const dates = (raw.match(/<(?:pubDate|published|updated)>([^<]+)</g) || []).map((m) => {
     const v = m.replace(/^<[^>]*>/, '').replace(/<$/, '').trim();
     const iso = DateTime.fromISO(v, { setZone: true });
@@ -52,7 +52,7 @@ for (let i = 0; i < all.length; i++) {
   const newest = dates.length ? DateTime.max(...dates) : null;
   const staleDays = newest ? Math.round(now.diff(newest, 'days').days) : null;
   if (staleDays !== null && staleDays > MAX_STALE_DAYS) {
-    results.push({ ...verdict, ok: false, rejected: `мовчить ${staleDays} днів` });
+    results.push({ ...verdict, ok: false, rejected: `silent for ${staleDays} days` });
     continue;
   }
 
@@ -67,8 +67,8 @@ for (let i = 0; i < all.length; i++) {
     items_seen: list.length,
     per_week: perWeek,
     freshness: newest ? newest.toISODate() : null,
-    // Goes into Нотатка so the row explains itself a year later.
-    note: `Запропоновано агентом ${now.toISODate()}. ${c.why || ''} Перевірено: ${list.length} записів, ~${perWeek ?? '?'} на тиждень, останній ${newest ? newest.toISODate() : 'без дати'}.`.trim(),
+    // Goes into the Note so the row explains itself a year later.
+    note: `Proposed by the agent on ${now.toISODate()}. ${c.why || ''} Verified: ${list.length} entries, ~${perWeek ?? '?'} per week, last ${newest ? newest.toISODate() : 'undated'}.`.trim(),
   });
 }
 
@@ -79,7 +79,7 @@ return [{
   json: {
     passed,
     failed,
-    summary: `запропоновано ${results.length}, перевірку пройшли ${passed.length}`,
+    summary: `${results.length} proposed, ${passed.length} passed verification`,
     // Rejections are shown too. Seeing "invented three feeds that do not exist" is part of what makes
     // the check visible rather than a claim in a README.
     rejected_lines: failed.map((f) => `${f.name} — ${f.rejected}`),

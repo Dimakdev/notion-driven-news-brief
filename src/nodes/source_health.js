@@ -28,22 +28,22 @@ for (const [name, stat] of Object.entries(perSource)) {
   if (!source) continue;
 
   if (stat.ok) {
-    // Recovery is a state change too: a source that answers again goes back to Активне from Деградує,
+    // Recovery is a state change too: a source that answers again goes back to Active from Degrading,
     // and the counter resets. Otherwise one bad week would slowly retire a perfectly good feed.
-    if (source.failures > 0 || source.status !== 'Активне') {
+    if (source.failures > 0 || source.status !== 'Active') {
       updates.push({
         page_id: source.id,
         properties: {
-          'Останній успіх': { date: { start: iso } },
-          'Поспіль невдач': { number: 0 },
-          'Статус': { select: { name: 'Активне' } },
+          'Last success': { date: { start: iso } },
+          'Failures in a row': { number: 0 },
+          'Status': { select: { name: 'Active' } },
         },
         _log: `${name}: recovered`,
       });
     } else {
       updates.push({
         page_id: source.id,
-        properties: { 'Останній успіх': { date: { start: iso } } },
+        properties: { 'Last success': { date: { start: iso } } },
         _log: null,
       });
     }
@@ -54,19 +54,19 @@ for (const [name, stat] of Object.entries(perSource)) {
   let status = source.status;
   let log = null;
   if (failures >= RETIRE_AT) {
-    status = 'На пенсії';
+    status = 'Retired';
     log = `${name}: retired after ${failures} failed runs`;
   } else if (failures >= DEGRADE_AT) {
-    status = 'Деградує';
+    status = 'Degrading';
     log = `${name}: silent for ${failures} runs`;
   }
 
   updates.push({
     page_id: source.id,
     properties: {
-      'Поспіль невдач': { number: failures },
-      'Статус': { select: { name: status } },
-      'Нотатка': { rich_text: [{ type: 'text', text: {
+      'Failures in a row': { number: failures },
+      'Status': { select: { name: status } },
+      'Note': { rich_text: [{ type: 'text', text: {
         content: `${iso}: ${String(stat.error || 'no answer').slice(0, 300)}`,
       } }] },
     },
@@ -76,7 +76,7 @@ for (const [name, stat] of Object.entries(perSource)) {
 
 // Topics whose sources all died. This is the trigger for discovery: the system noticed the hole before
 // the user did, and says so rather than serving an empty section.
-const retiredIds = new Set(updates.filter((u) => u.properties['Статус']?.select?.name === 'На пенсії').map((u) => u.page_id));
+const retiredIds = new Set(updates.filter((u) => u.properties['Status']?.select?.name === 'Retired').map((u) => u.page_id));
 const orphaned = (topics || [])
   .filter((t) => t.sourceIds?.length && t.sourceIds.every((id) => retiredIds.has(id)))
   .map((t) => t.name);

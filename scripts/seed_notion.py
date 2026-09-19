@@ -3,12 +3,12 @@
 
     python scripts/seed_notion.py
 
-Three topics, two sources, eight settings. Idempotent: rows that already exist by name are left alone,
+Three topics, two sources, ten settings. Idempotent: rows that already exist by name are left alone,
 so running it twice is safe.
 
 Why only the first topic gets sources: the other two are deliberately left empty so that the first
-thing a new fork does is tick "🔍 Знайти джерела" and watch the discovery run — propose, verify by
-actually fetching, approve. That flow is the point of the case and it is better seen than described.
+thing a new install does is tick "Find sources" and watch discovery run - propose, verify by actually
+fetching, approve. That flow is the point of the system and it is better seen than described.
 """
 from __future__ import annotations
 
@@ -21,34 +21,37 @@ from common import (Notion, load_env, load_state, multi, number, plain, relation
 
 TOPICS = [
     {
-        "name": "AI та автоматизація",
-        "criterion": ("Агенти, оркестрація, інструменти автоматизації, релізи моделей і те, що змінює "
-                      "вартість або спосіб роботи. Цікавить конкретика: що саме змінилось і що з цим "
-                      "робити. Не цікавлять прогнози про майбутнє без деталей і корпоративні новини."),
+        "name": "AI and automation",
+        "criterion": ("Agents, orchestration, automation tooling, model releases, and anything that "
+                      "changes the cost or the shape of the work. I want specifics: what actually "
+                      "changed and what to do about it. Not interested in predictions about the "
+                      "future with no detail, or in corporate news."),
         "signals": ["ai agents", "agent", "llm", "automation", "n8n", "workflow", "open source",
                     "anthropic", "openai", "gemini", "model release", "rag", "mcp"],
-        "minus": ["crypto", "nft", "funding round", "series a", "gadget review"],
-        "languages": ["en", "uk"],
+        "muted": ["crypto", "nft", "funding round", "series a", "gadget review"],
+        "languages": ["en"],
         "priority": "🔥 High",
         "threshold": 60,
     },
     {
-        "name": "Кулінарія",
-        "criterion": ("Техніки, рецепти, розбори того, чому щось працює на кухні, огляди обладнання, "
-                      "яке справді варте грошей. Не цікавлять ресторанні новини, дієти для схуднення "
-                      "і списки «10 найкращих» без пояснень."),
-        "signals": [],  # deliberately empty: shows what "no keyword filter, let the model decide" does
-        "minus": ["diet", "weight loss", "restaurant opening"],
-        "languages": ["en", "uk"],
+        "name": "Cooking",
+        "criterion": ("Techniques, recipes, explanations of why something works in a kitchen, and "
+                      "reviews of equipment that is genuinely worth the money. Not interested in "
+                      "restaurant news, weight-loss diets, or listicles with no reasoning."),
+        # Deliberately empty: this is what "no keyword filter, let the model decide" looks like.
+        "signals": [],
+        "muted": ["diet", "weight loss", "restaurant opening"],
+        "languages": ["en"],
         "priority": "⚡ Medium",
         "threshold": 65,
     },
     {
-        "name": "Космос",
-        "criterion": ("Запуски, місії, телескопи, знахідки. Цікавить те, що сталося насправді, з даними. "
-                      "Не цікавлять чутки про позаземне життя і перекази чужих пресрелізів."),
+        "name": "Space",
+        "criterion": ("Launches, missions, telescopes, findings. I want what actually happened, with "
+                      "data. Not interested in rumours about extraterrestrial life, or in press "
+                      "releases repeated without checking."),
         "signals": ["launch", "nasa", "spacex", "telescope", "mission", "orbit", "astronomy", "rover"],
-        "minus": ["ufo", "alien", "conspiracy"],
+        "muted": ["ufo", "alien", "conspiracy"],
         "languages": ["en"],
         "priority": "💤 Low",
         "threshold": 70,
@@ -57,28 +60,30 @@ TOPICS = [
 
 SOURCES = [
     {"name": "Hacker News", "url": "https://news.ycombinator.com/rss", "type": "hn",
-     "topic": "AI та автоматизація",
-     "note": ("Заголовки пише не автор статті, а той, хто запостив, тому відсів за словами тут слабший. "
-              "Адаптер дивиться на домен статті за посиланням.")},
+     "topic": "AI and automation",
+     "note": ("Titles are written by whoever submitted the link, not by the article's author, so the "
+              "keyword filter is weaker here. The adapter keeps the linked article's domain.")},
     {"name": "TechCrunch AI", "url": "https://techcrunch.com/category/artificial-intelligence/feed/",
-     "type": "rss", "topic": "AI та автоматизація",
-     "note": "Тематичний фід, найчистіший зі стартового набору."},
+     "type": "rss", "topic": "AI and automation",
+     "note": "A topic feed, the cleanest of the starting set."},
 ]
 
 SETTINGS = [
-    ("Час брифу", "05:00", "Коли приходить бриф, локальний час контейнера"),
-    ("Канал", "telegram", "telegram / whatsapp / email"),
-    ("Тижневий розбір", "увімкнено",
-     "увімкнено / вимкнено. Раз на тиждень список пунктів — познач шум. Єдине місце, де щось треба тиснути"),
-    ("День розбору", "неділя", "Коли приходить тижневий розбір"),
-    ("Розбір зараз", "ні", "Постав «так» — розбір прийде найближчим прогоном, потім скинеться"),
-    ("Стеля бюджету", "250",
-     "Максимум кандидатів у модель за прогін. Захист від рахунку, не від кількості пунктів"),
-    ("Вікно памʼяті", "30", "Скільки днів тримати хеші надісланого. Старше може прийти вдруге"),
-    ("Пауза", "вимкнено", "Відпустка: бриф не приходить, збір не йде, лічильники стоять"),
-    ("Адреса n8n", "http://localhost:5678",
-     "Адреса, за якою n8n досяжний ззовні. Через неї йдуть посилання в брифі і кнопки Telegram. "
-     "На localhost посилання відкриваються тільки на цій машині"),
+    ("Brief time", "05:00", "When the brief arrives, in the container's local time"),
+    ("Brief language", "en",
+     "The language the digest is written in: en, uk, de, fr, es, pl. Everything else stays English"),
+    ("Channel", "telegram", "telegram / whatsapp / email"),
+    ("Weekly review", "on",
+     "on / off. Once a week, a list of what you did not open. The only place anything asks for a tap"),
+    ("Review day", "sunday", "Which day the weekly review arrives"),
+    ("Review now", "no", "Set to yes and the review goes out on the next run, then resets itself"),
+    ("Budget ceiling", "250",
+     "Most candidates handed to the model per run. A guard on the bill, not on how many items ship"),
+    ("Memory window", "30", "How many days a sent article stays remembered. Older may arrive again"),
+    ("Pause", "off", "Holiday: no brief, no fetching, counters stand still"),
+    ("n8n address", "http://localhost:5678",
+     "Where n8n is reachable from outside. Links in the brief and Telegram buttons go through it. "
+     "On localhost the links open only on this machine, so the workflow drops the wrapper"),
 ]
 
 
@@ -99,61 +104,61 @@ def main():
     notion = Notion(env["NOTION_TOKEN"])
 
     print("Topics")
-    have = existing_titles(notion, dbs["topics"], "Тема")
+    have = existing_titles(notion, dbs["topics"], "Topic")
     topic_ids = dict(have)
     for t in TOPICS:
         if t["name"] in have:
             print(f"  {t['name']:<22} already there")
             continue
         page = notion.create_page(dbs["topics"], {
-            "Тема": title(t["name"]),
-            "Статус": select("Активна"),
-            "Критерій": rich(t["criterion"]),
-            "Сигнали": multi(t["signals"]),
-            "Мінус-сигнали": multi(t["minus"]),
-            "Мови": multi(t["languages"]),
-            "Вікно": number(24),
-            "Поріг": number(t["threshold"]),
-            "Пріоритет": select(t["priority"]),
-            "🔍 Знайти джерела": {"checkbox": False},
+            "Topic": title(t["name"]),
+            "Status": select("Active"),
+            "Criterion": rich(t["criterion"]),
+            "Signals": multi(t["signals"]),
+            "Muted": multi(t["muted"]),
+            "Languages": multi(t["languages"]),
+            "Window": number(24),
+            "Threshold": number(t["threshold"]),
+            "Priority": select(t["priority"]),
+            "Find sources": {"checkbox": False},
         })
         topic_ids[t["name"]] = page["id"]
         print(f"  {t['name']:<22} created"
-              + ("   (Сигнали порожні — фільтр за словами вимкнено навмисне)" if not t["signals"] else ""))
+              + ("   (Signals left empty on purpose: no keyword filter)" if not t["signals"] else ""))
 
     print("\nSources")
-    have = existing_titles(notion, dbs["sources"], "Джерело")
+    have = existing_titles(notion, dbs["sources"], "Source")
     for s in SOURCES:
         if s["name"] in have:
             print(f"  {s['name']:<22} already there")
             continue
         notion.create_page(dbs["sources"], {
-            "Джерело": title(s["name"]),
-            "Адреса": {"url": s["url"]},
-            "Тип": select(s["type"]),
-            "Статус": select("Активне"),
-            "Хто запропонував": select("людина"),
-            "Поспіль невдач": number(0),
-            "Нотатка": rich(s["note"]),
-            "Теми": relation([topic_ids[s["topic"]]]) if topic_ids.get(s["topic"]) else relation([]),
+            "Source": title(s["name"]),
+            "Address": {"url": s["url"]},
+            "Type": select(s["type"]),
+            "Status": select("Active"),
+            "Proposed by": select("human"),
+            "Failures in a row": number(0),
+            "Note": rich(s["note"]),
+            "Topics": relation([topic_ids[s["topic"]]]) if topic_ids.get(s["topic"]) else relation([]),
         })
         print(f"  {s['name']:<22} created")
 
     print("\nSettings")
-    have = existing_titles(notion, dbs["settings"], "Ключ")
+    have = existing_titles(notion, dbs["settings"], "Key")
     for key, value, note in SETTINGS:
         if key in have:
             print(f"  {key:<22} already there")
             continue
         notion.create_page(dbs["settings"], {
-            "Ключ": title(key), "Значення": rich(value), "Опис": rich(note),
+            "Key": title(key), "Value": rich(value), "Note": rich(note),
         })
         print(f"  {key:<22} = {value}")
 
     print("\n" + "-" * 72)
-    print("Two of the three topics have no sources on purpose. Open Теми, tick «🔍 Знайти джерела» on")
-    print("Кулінарія, and watch the discovery run: it proposes, fetches each candidate to check it is")
-    print("real and still alive, and only then offers it to you.")
+    print("Two of the three topics have no sources on purpose. Open Topics, tick 'Find sources' on")
+    print("Cooking, and watch discovery run: it proposes, fetches each candidate to check it is real")
+    print("and still alive, and only then offers it to you.")
 
 
 if __name__ == "__main__":

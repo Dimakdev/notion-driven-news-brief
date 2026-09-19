@@ -1,7 +1,7 @@
 // [31] Source discovery, step one: which topics are asking, and what do they already have.
 //
 // Runs every quarter of an hour against one cheap Notion query. A topic asks either by having its
-// `🔍 Знайти джерела` box ticked, or by having no live sources at all — the system noticing a hole
+// `Find sources` box ticked, or by having no live sources at all — the system noticing a hole
 // before the person does.
 const MAX_CANDIDATES = 8;
 
@@ -36,37 +36,47 @@ const id = (p) => String(p.id || '').replace(/-/g, '');
 const urlsByTopic = new Map();
 const liveCount = new Map();
 for (const s of pages('Notion: Sources (discovery)')) {
-  const status = prop(s, 'Статус');
-  const url = prop(s, 'Адреса');
-  for (const rel of prop(s, 'Теми') || []) {
+  const status = prop(s, 'Status');
+  const url = prop(s, 'Address');
+  for (const rel of prop(s, 'Topics') || []) {
     const tid = String(rel).replace(/-/g, '');
     if (!urlsByTopic.has(tid)) urlsByTopic.set(tid, []);
     if (url) urlsByTopic.get(tid).push(url);
-    if (status === 'Активне') liveCount.set(tid, (liveCount.get(tid) || 0) + 1);
+    if (status === 'Active') liveCount.set(tid, (liveCount.get(tid) || 0) + 1);
   }
 }
 
+// The report is written in the reader's language, like the brief itself.
+let settingsLang = 'en';
+try {
+  for (const r of pages('Notion: Settings (discovery)')) {
+    const k = String(prop(r, 'Key') || '').trim().toLowerCase();
+    if (k === 'brief language') settingsLang = String(prop(r, 'Value') || 'en').trim().toLowerCase().slice(0, 2);
+  }
+} catch { settingsLang = 'en'; }
+
 const out = [];
 for (const t of pages('Notion: Topics (discovery)')) {
-  if (prop(t, 'Статус') !== 'Активна') continue;
+  if (prop(t, 'Status') !== 'Active') continue;
   const tid = id(t);
-  const asked = prop(t, '🔍 Знайти джерела') === true;
+  const asked = prop(t, 'Find sources') === true;
   const starving = (liveCount.get(tid) || 0) === 0;
   if (!asked && !starving) continue;
 
-  const criterion = (prop(t, 'Критерій') || '').trim();
+  const criterion = (prop(t, 'Criterion') || '').trim();
   if (!criterion) continue;   // nothing to search for; [6] already names such topics in the run row
 
   out.push({
     json: {
       topic_id: tid,
       topic_page_id: t.id,
-      topic_name: prop(t, 'Тема'),
+      topic_name: prop(t, 'Topic'),
       asked_explicitly: asked,
-      prompt_topic: `name: ${prop(t, 'Тема')}\nwants: ${criterion}`,
-      prompt_languages: (prop(t, 'Мови') || ['en']).join(', '),
+      prompt_topic: `name: ${prop(t, 'Topic')}\nwants: ${criterion}`,
+      prompt_languages: (prop(t, 'Languages') || ['en']).join(', '),
       prompt_existing: (urlsByTopic.get(tid) || []).join('\n') || '(none yet)',
       max_candidates: MAX_CANDIDATES,
+      lang: settingsLang,
     },
   });
 }

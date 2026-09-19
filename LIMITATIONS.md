@@ -1,6 +1,6 @@
 # What this does not do
 
-Written before anyone asks, because a portfolio piece that only lists its strengths is an advertisement.
+Written before anyone asks, because software that only lists its strengths is an advertisement.
 
 ## By design
 
@@ -13,7 +13,7 @@ looked.
 
 **No embeddings.** Duplicate detection compares title word-sets, and the cheap filter compares keywords.
 Two reports of the same event written with completely different headlines will both arrive. The stored
-score and the `Дублі` count make this visible, but nothing corrects it automatically.
+score and the `Duplicates` count make this visible, but nothing corrects it automatically.
 
 **Thirty days of memory.** The seen-index is a rolling window. An article that resurfaces in March after
 being sent in January is sent again. The window is a setting; making it a year would work and would also
@@ -38,7 +38,7 @@ workflow with a challenge page. It parses as zero entries, the source degrades, 
 the correct outcome and it is not a bug to fix with a better user agent.
 
 **The model sometimes returns nothing usable.** A chunk that comes back unreadable is counted in
-`Прогони` under `Помилки` and its articles are not marked as seen, so they get another chance the next
+`Runs` under `Errors` and its articles are not marked as seen, so they get another chance the next
 morning. They do not appear in that day's brief.
 
 **Costs scale with sources, not with topics.** Adding a topic adds a few lines to one prompt. Adding six
@@ -79,7 +79,7 @@ that chunk rather than ending the run. Articles from a failed chunk are counted 
 run row and are not marked as seen, so they get another chance the next morning — but they are missing
 from that day's brief.
 
-**Telegram will not link a private address.** If `Адреса n8n` is not public, the workflow drops the
+**Telegram will not link a private address.** If `n8n address` is not public, the workflow drops the
 click wrapper and links straight to the article. That is the right behaviour, but it means click data
 simply does not exist for a local install, and the weekly review is the only feedback left.
 
@@ -89,8 +89,8 @@ fails. The node ships disabled; enable it once n8n has a public URL.
 
 ## Known rough edges
 
-- `Час брифу` is read hourly, so moving the brief takes effect the same day but not the same minute.
-- A topic whose `Критерій` is empty is skipped and named in the run row, rather than scoring everything
+- `Brief time` is read hourly, so moving the brief takes effect the same day but not the same minute.
+- A topic whose `Criterion` is empty is skipped and named in the run row, rather than scoring everything
   against an empty string.
 - The weekly review shows at most 25 items in one message; a busier week links to the archive for the
   rest.

@@ -11,6 +11,11 @@ if (!included || included.length === 0) {
   return [{ json: { nothing_today: true, counters, config, topics, per_source, budget, score_buckets, problems, included: [] } }];
 }
 
+// The prompt is told the language by name, not by code: a model writes better Ukrainian when
+// asked for "Ukrainian" than when handed "uk".
+const LANGS = {'en': 'English', 'uk': 'Ukrainian', 'de': 'German', 'fr': 'French', 'es': 'Spanish', 'pl': 'Polish'};
+const language = LANGS[(config.lang || 'en')] || 'English';
+
 const chunks = [];
 for (let i = 0; i < included.length; i += CHUNK) {
   const slice = included.slice(i, i + CHUNK);
@@ -27,6 +32,7 @@ for (let i = 0; i < included.length; i += CHUNK) {
         `matched_because: ${it.reason}`,
       ].filter(Boolean).join('\n')).join('\n\n'),
       expected: slice.length,
+      prompt_language: language,
       ...(chunks.length === 0 ? {
         _included: included, _counters: counters, _config: config, _topics: topics,
         _per_source: per_source, _budget: budget, _buckets: score_buckets, _problems: problems,

@@ -1,6 +1,6 @@
 # Design document
 
-Written before the build, in Ukrainian, and translated here. The last section is what changed once it
+Written before the build and translated here. The last section is what changed once it
 met reality — kept separate on purpose, because a design document that was right about everything was
 either trivial or rewritten afterwards.
 
@@ -35,9 +35,9 @@ These rules survived five months and were not rewritten:
 
 - **A quality bar, not a quota.** Could be 3 items, could be 15. Never pad to reach a number, never
   cut a strong story to stay under one.
-- **"💡 Чому це важливо" only when it is honest.** A forced line is worse than no line: it teaches the
+- **The "why it matters" line only when it is honest.** A forced line is worse than no line: it teaches the
   reader to skip the section.
-- **The `{N} прочитано · {M} включено` footer.** A built-in honesty metric: you can see what was
+- **The `{N} read · {M} included` footer.** A built-in honesty metric: you can see what was
   discarded.
 - **Dry tone, no AI-speak.**
 - **Payload to a file, then curl** — never escape JSON inside a shell command.
@@ -59,7 +59,7 @@ A button under an item asks for a verdict *before* the article has been read, an
 worst possible moment — just as the reader is about to leave. It rates the summary, not the piece.
 
 A single button under the whole brief is worse: if five items were noise and the sixth was excellent,
-"мимо" is a lie.
+"miss" is a lie.
 
 So: **nothing to press at delivery.** The click through the link wrapper is the primary signal, taken
 at the moment interest is real and costing the reader nothing. Per-item judgement happens in a weekly
@@ -79,7 +79,7 @@ The design was right about the shape and wrong about several details. Each of th
 run, not from review.
 
 **The brief page needed its own table.** The design had five tables; the digest had nowhere to live
-with a stable address. `Брифи` is the sixth.
+with a stable address. `Briefs` is the sixth.
 
 **The model calls split in two.** The design had one. Judging is cheap and happens to ~40 articles;
 writing is dear and should happen only to the handful that earned it. One pass would have paid full

@@ -14,7 +14,7 @@ try {
 } catch {
   // Pairing can be lost if a node in between drops it. Better an item without its source name than a
   // crashed run: [6] counts it under an unknown source and the brief still goes out.
-  source = { name: '(джерело невідоме)', type: 'rss', topicIds: [] };
+  source = { name: '(source unknown)', type: 'rss', topicIds: [] };
 }
 
 if (j._fetch_failed === true) {

@@ -6,7 +6,7 @@
 // workflow to move your brief", which is exactly what this system exists to avoid. The cost is one
 // small Notion query per hour; the Topics and Sources tables are only read when the gate opens.
 const norm = (s) => String(s || '').trim().toLowerCase();
-const isOn = (v) => ['увімкнено', 'так', 'on', 'true', 'yes', '1'].includes(norm(v));
+const isOn = (v) => ['on', 'yes', 'on', 'true', 'yes', '1'].includes(norm(v));
 
 // One Notion query answers with a single object holding every row in `results`, so the rows are
 // unwrapped before reading. Looping the items directly would loop once over the envelope.
@@ -20,8 +20,8 @@ for (const item of $input.all()) {
 const settings = {};
 for (const row of rows) {
   const p = row.properties || {};
-  const key = norm((p['Ключ']?.title || []).map((t) => t.plain_text).join('') || row['Ключ']);
-  const val = (p['Значення']?.rich_text || []).map((t) => t.plain_text).join('') || row['Значення'] || '';
+  const key = norm((p['Key']?.title || []).map((t) => t.plain_text).join('') || row['Key']);
+  const val = (p['Value']?.rich_text || []).map((t) => t.plain_text).join('') || row['Value'] || '';
   if (key) settings[key] = String(val).trim();
 }
 
@@ -37,21 +37,21 @@ let forced = false;
 try { forced = $('Run now').all().length > 0; } catch { forced = false; }
 
 const config = {
-  paused: isOn(settings['пауза']),
-  briefTime: settings['час брифу'] || '05:00',
-  weeklyReview: isOn(settings['тижневий розбір']),
-  weeklyReviewDay: norm(settings['день розбору']) || 'неділя',
-  reviewNow: isOn(settings['розбір зараз']),
-  channel: norm(settings['канал']) || 'telegram',
+  paused: isOn(settings['pause']),
+  briefTime: settings['brief time'] || '05:00',
+  weeklyReview: isOn(settings['weekly review']),
+  weeklyReviewDay: norm(settings['review day']) || 'sunday',
+  reviewNow: isOn(settings['review now']),
+  channel: norm(settings['channel']) || 'telegram',
 };
 
 const briefHour = Number(String(config.briefTime).split(':')[0]);
-const DAYS = { 'понеділок': 1, 'вівторок': 2, 'середа': 3, 'четвер': 4, 'пʼятниця': 5, "п'ятниця": 5, 'субота': 6, 'неділя': 7 };
+const DAYS = { monday: 1, tuesday: 2, wednesday: 3, thursday: 4, friday: 5, saturday: 6, sunday: 7 };
 
-// Пауза stops everything, including the weekly review. A holiday should be quiet, not half quiet.
+// Pause stops everything, including the weekly review. A holiday should be quiet, not half quiet.
 // A forced run ignores it: asking for the brief by hand is an explicit answer to "are you on holiday".
 if (config.paused && !forced) {
-  return [{ json: { run_brief: false, run_review: false, reason: 'пауза', config } }];
+  return [{ json: { run_brief: false, run_review: false, reason: 'paused', config } }];
 }
 
 // One brief per day even if the hour is hit twice — a manual run, a restart, a clock change. The last
@@ -60,7 +60,7 @@ const alreadyToday = store.last_run?.date === today;
 const runBrief = forced || (Number.isFinite(briefHour) && now.hour === briefHour && !alreadyToday);
 
 // The review rides along with the brief hour on its day, so the person gets one message, not two at
-// odd times. "Розбір зараз" jumps the queue and is reset by [43] once it has been sent.
+// odd times. "Review now" jumps the queue and is reset by [43] once it has been sent.
 const isReviewDay = now.weekday === (DAYS[config.weeklyReviewDay] ?? 7);
 const runReview = config.reviewNow || (config.weeklyReview && isReviewDay && runBrief);
 

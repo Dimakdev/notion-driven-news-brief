@@ -3,7 +3,7 @@
 // arrives, a row changes, the person gets on with their day.
 //
 //   /webhook/r?i=<hash>   a link in the brief was opened  -> record the click, redirect to the article
-//   callback  мимо:<hash> the weekly review marked an item as noise
+//   callback  miss:<hash> the weekly review marked an item as noise
 //   callback  src:<id>    a proposed source was approved
 //
 // Nothing here trusts what arrived: a hash is looked up, never used to build a redirect, and the
@@ -22,7 +22,7 @@ function out(kind, extra) {
 
 // ---------------------------------------------------------------- 1. a click on an article link
 if (hash) {
-  // Only the shape is validated here; [21] resolves it against Стрічка and takes the address from the
+  // Only the shape is validated here; [21] resolves it against Feed and takes the address from the
   // stored row. An unknown hash lands on the brief archive rather than anywhere a stranger chose.
   const clean = /^[0-9a-f]{8}$/.test(hash) ? hash : '';
   return out('click', { hash: clean, valid: !!clean });
@@ -34,14 +34,14 @@ if (data) {
   const chatId = callback?.message?.chat?.id;
   const callbackId = callback?.id;
 
-  if (verb === 'мимо' || verb === 'miss') {
-    return out('verdict', { hash: String(arg || '').trim(), verdict: 'мимо', chat_id: chatId, callback_id: callbackId, toast: 'Позначено як мимо' });
+  if (verb === 'miss' || verb === 'miss') {
+    return out('verdict', { hash: String(arg || '').trim(), verdict: 'miss', chat_id: chatId, callback_id: callbackId, toast: 'Marked as a miss' });
   }
   if (verb === 'save') {
-    return out('verdict', { hash: String(arg || '').trim(), verdict: '📌 збережено', chat_id: chatId, callback_id: callbackId, toast: 'Збережено' });
+    return out('verdict', { hash: String(arg || '').trim(), verdict: '📌 saved', chat_id: chatId, callback_id: callbackId, toast: 'Saved' });
   }
   if (verb === 'src') {
-    return out('approve_source', { page_id: String(arg || '').trim(), chat_id: chatId, callback_id: callbackId, toast: 'Джерело увімкнено' });
+    return out('approve_source', { page_id: String(arg || '').trim(), chat_id: chatId, callback_id: callbackId, toast: 'Source switched on' });
   }
   return out('unknown', { data, callback_id: callbackId, toast: '' });
 }

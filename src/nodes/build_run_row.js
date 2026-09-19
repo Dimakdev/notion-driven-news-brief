@@ -30,7 +30,7 @@ if (d.budget?.hit) errors.push(`budget ceiling ${d.budget.ceiling} of ${d.budget
 if (c.no_verdict) errors.push(`${c.no_verdict} items came back without a verdict`);
 for (const [name, s] of Object.entries(d.per_source || {})) if (!s.ok) errors.push(`${name}: ${s.error || 'no answer'}`);
 for (const p of d.problems || []) errors.push(String(p));
-if (d.tracking_enabled === false) errors.push('links not wrapped: Адреса n8n is not public, click tracking off');
+if (d.tracking_enabled === false) errors.push('links not wrapped: the n8n address is not public, click tracking off');
 for (const t of d.warnings?.topics_without_sources || []) errors.push(`topic without live sources: ${t}`);
 for (const t of d.warnings?.topics_without_criterion || []) errors.push(`topic without a criterion, skipped: ${t}`);
 
@@ -39,15 +39,15 @@ return [{
     ...d,
     run_row: {
       properties: {
-        'Дата': { title: [{ type: 'text', text: { content: d.run_date || DateTime.now().toISODate() } }] },
-        'Розглянуто': { number: Number(c.considered || 0) },
-        'Відсіяно правилом': { number: Number(c.dropped_by_rule || 0) },
-        'Відсіяно моделлю': { number: Number(c.dropped_below_threshold || 0) },
-        'Включено': { number: included.length },
-        'Джерела JSON': { rich_text: [{ type: 'text', text: { content: JSON.stringify(perSource).slice(0, 2000) } }] },
-        'Сигнали JSON': { rich_text: [{ type: 'text', text: { content: JSON.stringify(signals).slice(0, 2000) } }] },
-        'Помилки': { rich_text: [{ type: 'text', text: { content: (errors.join(' · ') || '—').slice(0, 2000) } }] },
-        'Тривалість': { number: started ? Math.round(DateTime.now().diff(started, 'seconds').seconds) : 0 },
+        'Date': { title: [{ type: 'text', text: { content: d.run_date || DateTime.now().toISODate() } }] },
+        'Considered': { number: Number(c.considered || 0) },
+        'Dropped by rule': { number: Number(c.dropped_by_rule || 0) },
+        'Dropped by model': { number: Number(c.dropped_below_threshold || 0) },
+        'Included': { number: included.length },
+        'Sources JSON': { rich_text: [{ type: 'text', text: { content: JSON.stringify(perSource).slice(0, 2000) } }] },
+        'Signals JSON': { rich_text: [{ type: 'text', text: { content: JSON.stringify(signals).slice(0, 2000) } }] },
+        'Errors': { rich_text: [{ type: 'text', text: { content: (errors.join(' · ') || '—').slice(0, 2000) } }] },
+        'Duration': { number: started ? Math.round(DateTime.now().diff(started, 'seconds').seconds) : 0 },
       },
     },
   },

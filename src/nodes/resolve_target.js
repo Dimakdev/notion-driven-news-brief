@@ -15,8 +15,8 @@ if (!found) {
   return [{ json: { page_id: null, target: FALLBACK, matched: false, hash: route.hash || null, properties: {} } }];
 }
 
-const url = found.properties?.['Посилання']?.url;
-const alreadyOpened = found.properties?.['Відкрито']?.date?.start;
+const url = found.properties?.['Link']?.url;
+const alreadyOpened = found.properties?.['Opened']?.date?.start;
 
 // Only http(s) is followed. A feed that ever hands us a javascript: or data: address does not get to
 // pass it on to the reader's browser.
@@ -29,7 +29,7 @@ return [{
     matched: true,
     hash: route.hash || null,
     // First open wins. Re-reading an article a week later should not rewrite when it first landed.
-    properties: alreadyOpened ? {} : { 'Відкрито': { date: { start: DateTime.now().toISO() } } },
+    properties: alreadyOpened ? {} : { 'Opened': { date: { start: DateTime.now().toISO() } } },
     already_opened: !!alreadyOpened,
   },
 }];

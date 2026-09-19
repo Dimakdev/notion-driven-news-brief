@@ -5,13 +5,13 @@ about. Six tables in Notion decide everything: what to look for, where to read i
 and what has already been sent. An n8n workflow does the rest — fetching, de-duplicating, scoring,
 delivering, and keeping an honest record of what it threw away.
 
-It is the rebuilt version of a routine that has run every morning since April 2026. The original kept
+It is the rebuilt version of a routine I have been running every morning since April 2026. The original kept
 its topics, its sources and its rules as prose inside one prompt, which meant changing your mind meant
 editing an instruction file. Here, changing your mind is editing a row.
 
 ```
                     ┌──────────── Notion ────────────┐
-   every hour ──────▶  Налаштування  Теми  Джерела   │
+   every hour ──────▶  Settings  Topics  Sources   │
                     └───────────────┬────────────────┘
                                     ▼
    fetch 11 sources ──▶ stage 1: window · already seen · duplicates · muted · keywords
@@ -23,7 +23,7 @@ editing an instruction file. Here, changing your mind is editing a row.
 
 ## What a morning looks like
 
-1. The workflow wakes up, reads `Налаштування`, and stops again unless this is the hour you asked
+1. The workflow wakes up, reads `Settings`, and stops again unless this is the hour you asked
    for. The time of day is data, not a cron expression buried in a node.
 2. It reads your active topics and their live sources, and fetches each source through its adapter —
    RSS, Atom, a YouTube channel, a subreddit, Hacker News, or any JSON endpoint.
@@ -33,7 +33,7 @@ editing an instruction file. Here, changing your mind is editing a row.
 4. **Stage two, paid.** A model scores each survivor from 0 to 100 against the *criterion you wrote in
    your own words*, and says in one phrase what matched.
 5. Everything above that topic's threshold is written up and sent. **Everything.** Fifteen articles
-   above the bar is a fifteen-item brief. One is one. None says "сьогодні нічого" and stops. There is
+   above the bar is a fifteen-item brief. One is one. None says "nothing today" and stops. There is
    no cap anywhere in the code and nothing is padded to look busy.
 6. What shipped is archived, the run is recorded as eight numbers, and only then — after the brief has
    actually been delivered — is the seen-index updated.
@@ -53,34 +53,34 @@ can edit turns the same system into something you hand to someone else.
 
 | Table | Answers | You edit |
 |---|---|---|
-| `Теми` | what to look for | the criterion in plain language, keywords, muted words, the threshold |
-| `Джерела` | where to read | addresses, types, and one checkbox that starts source discovery |
-| `Стрічка` | what was sent | nothing, usually — it is the archive and the click record |
-| `Прогони` | how the filter did | nothing — eight numbers a day, the basis of every metric |
-| `Налаштування` | time, channel, ceilings, holiday | all of it |
-| `Брифи` | one page per morning | nothing — it is what "повний бриф ↗" opens |
+| `Topics` | what to look for | the criterion in plain language, keywords, muted words, the threshold |
+| `Sources` | where to read | addresses, types, and one checkbox that starts source discovery |
+| `Feed` | what was sent | nothing, usually — it is the archive and the click record |
+| `Runs` | how the filter did | nothing — eight numbers a day, the basis of every metric |
+| `Settings` | time, channel, ceilings, holiday | all of it |
+| `Briefs` | one page per morning | nothing — it is what "full brief" opens |
 
 Two fields are worth understanding:
 
-- **`Критерій`** is the text the model judges against. It replaces a paragraph of prompt. Write it the
+- **`Criterion`** is the text the model judges against. It replaces a paragraph of prompt. Write it the
   way you would explain the topic to a person, *including what you do not want* — the negative half
   does most of the work.
-- **`Поріг`** is your volume knob, per topic. Noisy → raise it. Feels like it is missing things →
-  lower it. Every item's score is stored in `Стрічка`, so after a week you set it on evidence rather
+- **`Threshold`** is your volume knob, per topic. Noisy → raise it. Feels like it is missing things →
+  lower it. Every item's score is stored in `Feed`, so after a week you set it on evidence rather
   than by feel.
 
-Leaving `Сигнали` empty is deliberate, not incomplete: it switches the keyword filter off for that
+Leaving `Signals` empty is deliberate, not incomplete: it switches the keyword filter off for that
 topic and sends everything in the window to the model. More expensive, misses nothing.
 
 ## Source discovery: proposed, verified, approved
 
-Tick `🔍 Знайти джерела` on a topic. Within a few minutes:
+Tick `Find sources` on a topic. Within a few minutes:
 
 1. a model proposes candidate feeds;
 2. **the code fetches every one of them** — does it parse, does it hold more than a couple of entries,
    was the last one published in the past fortnight, is it already in your list;
-3. survivors land in `Джерела` as `Запропоновано`, with the measured numbers filled in;
-4. you set the ones you want to `Активне`.
+3. survivors land in `Sources` as `Proposed`, with the measured numbers filled in;
+4. you set the ones you want to `Active`.
 
 A real run, for a topic about smart glasses: five proposed, five verified, and the numbers told the
 story the model could not — 9to5Mac publishes 207 items a week (a firehose), Apple Developer News
@@ -168,7 +168,7 @@ Every link in the brief goes through your own n8n so the click can be recorded. 
 that cannot work — and Telegram will not even render a `localhost` href as a link, so the reader gets
 plain text and no way to open anything.
 
-The workflow handles this rather than pretending: when `Адреса n8n` in `Налаштування` is not a public
+The workflow handles this rather than pretending: when `n8n address` in `Settings` is not a public
 address, links point straight at the article and the run row notes that tracking is off. Put n8n behind
 a public URL, change that one row, and the wrapper switches itself on. No redeploy.
 
@@ -179,7 +179,7 @@ disabled and the brief works without it.
 ## Make it yours
 
 - **A new kind of source** — one entry in `SOURCES` in `src/nodes/build_fetch_plan.js`, one option in
-  the `Тип` column. The rest of the graph does not change.
+  the `Type` column. The rest of the graph does not change.
 - **A different messenger** — one entry in `DELIVERY` in the same file. Telegram is the reference;
   what WhatsApp requires is in `LIMITATIONS.md`, and it is more than it looks.
 - **A different model** — `python scripts/build_workflow.py --provider anthropic`, then redeploy.
@@ -203,7 +203,7 @@ way it does, and most of them would be quiet in production rather than loud.
 | The seen-index stayed empty | `Commit seen` read its input, and the Telegram node before it had replaced the item | **the worst one**: the brief would have looked fine and repeated the same articles daily |
 | Redeploying wiped the memory | a freshly built `workflow.json` has no `staticData` | a week of articles would return after every deploy |
 | One malformed model answer ended the run | no retry, no fallback | both model calls now retry once and degrade instead of crashing |
-| "Читати оригінал" was not a link | Telegram refuses to linkify `localhost` | the digest arrived unreadable |
+| The "read the original" line was not a link | Telegram refuses to linkify `localhost` | the digest arrived unreadable |
 | An n8n advert under every brief | the Telegram node appends its own attribution unless told not to | — |
 
 ## Honest notes
@@ -216,5 +216,4 @@ way it does, and most of them would be quiet in production rather than loud.
   own credentials to be useful.
 - The full list is in [LIMITATIONS.md](LIMITATIONS.md).
 
-Built by Dmytro Kravchuk as a portfolio piece. MIT licensed — fork it, point it at your own Notion, and
-tell it what you actually want to read.
+MIT licensed. Fork it, point it at your own Notion, and tell it what you actually want to read.

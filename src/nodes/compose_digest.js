@@ -3,6 +3,19 @@
 // Everything here that looks like a style rule is one: they came out of five months of the routine
 // this case replaces, and they are the difference between a digest someone reads and one they mute.
 const MAX_TELEGRAM = 4096;     // hard platform limit; the page link is what makes it irrelevant
+
+// The only words the system writes itself. Everything else in a brief comes from the model, in the
+// language the reader set. Adding a language is a row here, not a change anywhere else.
+const STRINGS = {
+  en: { brief: 'Brief', nothing: 'Nothing cleared the bar today.', read: 'read', included: 'included',
+        silent: 'sources silent', ceiling: 'of', ceilingTail: 'considered — budget ceiling',
+        noVerdict: 'no verdict', alsoIn: 'also in', open: 'Read the original',
+        full: 'full brief ↗', judged: 'reached scoring, best below the threshold', more: 'more on the page' },
+  uk: { brief: 'Бриф', nothing: 'Сьогодні нічого не перетнуло поріг.', read: 'прочитано', included: 'включено',
+        silent: 'джерела мовчать', ceiling: 'з', ceilingTail: 'розглянуто — стеля бюджету',
+        noVerdict: 'без вердикту', alsoIn: 'також у', open: 'Читати оригінал',
+        full: 'повний бриф ↗', judged: 'дійшло до оцінки, найкраще нижче порога', more: 'далі на сторінці брифу' },
+};
 const PRIORITY_ORDER = { '🔥 High': 0, '⚡ Medium': 1, '💤 Low': 2 };
 
 const first = $input.first().json;
@@ -28,6 +41,7 @@ const publicBase = String(config.publicBase || 'http://localhost:5678').replace(
 const trackable = !/^https?:\/\/(localhost|127\.|0\.0\.0\.0|\[::1\]|192\.168\.|10\.)/i.test(publicBase);
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 const date = DateTime.now().toFormat('dd.MM.yyyy');
+const S = STRINGS[config.lang] || STRINGS.en;
 
 // ---------------------------------------------------------------- merge the written text back in
 // The writer returns Ukrainian title, two or three sentences, and the "why it matters" line. When it
@@ -80,15 +94,15 @@ const showHeadings = ordered.length > 1;
 // ---------------------------------------------------------------- footer
 // The footer is where the system admits things. Everything that could make the brief quietly thinner
 // than it should be gets a line here, so "нічого цікавого" never hides a broken source or a ceiling.
-const footer = [`${counters.considered || 0} прочитано · ${included.length} включено`];
+const footer = [`${counters.considered || 0} ${S.read} · ${included.length} ${S.included}`];
 const silent = Object.entries(perSource).filter(([, s]) => !s.ok).map(([name]) => name);
-if (silent.length) footer.push(`джерела мовчать: ${silent.join(', ')}`);
-if (budget.hit) footer.push(`розглянуто ${budget.ceiling} з ${budget.wanted} — стеля бюджету`);
-if (counters.no_verdict) footer.push(`без вердикту: ${counters.no_verdict}`);
+if (silent.length) footer.push(`${S.silent}: ${silent.join(', ')}`);
+if (budget.hit) footer.push(`${budget.ceiling} ${S.ceiling} ${budget.wanted} ${S.ceilingTail}`);
+if (counters.no_verdict) footer.push(`${S.noVerdict}: ${counters.no_verdict}`);
 if (problems.length) footer.push(problems.join('; '));
 
 // ---------------------------------------------------------------- render
-const tg = [`🌅 <b>Бриф ${date}</b>`];
+const tg = [`🌅 <b>${S.brief} ${date}</b>`];
 const md = [];
 const rows = [];
 let n = 0;
@@ -105,15 +119,15 @@ for (const g of ordered) {
     const block = [`${n}. <b>${esc(title)}</b>`];
     if (summary) block.push(esc(summary));
     if (w.why) block.push(`💡 <i>${esc(w.why)}</i>`);
-    if (it.duplicates > 1) block.push(`<i>також у: ${esc(it.duplicate_sources.filter((s) => s !== it.source_name).join(', '))}</i>`);
-    block.push(`🔗 <a href="${esc(track)}">Читати оригінал</a>`);
+    if (it.duplicates > 1) block.push(`<i>${S.alsoIn}: ${esc(it.duplicate_sources.filter((s) => s !== it.source_name).join(', '))}</i>`);
+    block.push(`🔗 <a href="${esc(track)}">${S.open}</a>`);
     tg.push('', block.join('\n'));
 
     md.push(`### ${n}. ${title}`);
     if (summary) md.push(summary);
     if (w.why) md.push(`💡 ${w.why}`);
-    md.push(`Джерело: ${it.source_name} · бал ${it.score} · збіг: ${it.reason}`);
-    md.push(`[Читати оригінал](${it.url})`);
+    md.push(`${it.source_name} · ${it.score} · ${it.reason}`);
+    md.push(`[${S.open}](${it.url})`);
 
     rows.push({
       hash: it.url_hash, title, url: it.url, source_id: it.source_id, topic_id: it.topic_id,
@@ -122,7 +136,7 @@ for (const g of ordered) {
   }
 }
 
-const pageTitle = `🌅 Бриф ${date}`;
+const pageTitle = `🌅 ${S.brief} ${date}`;
 tg.push('', `<i>${esc(footer.join(' · '))}</i>`);
 md.push('---', footer.join(' · '));
 

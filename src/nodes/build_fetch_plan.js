@@ -35,7 +35,7 @@ const UA = 'Mozilla/5.0 (compatible; notion-driven-news-brief/1.0; +https://gith
 const { config, sources, topics, warnings, counts } = $input.first().json;
 
 if (config.paused) {
-  // Пауза in Settings: the run ends here, deliberately and visibly, instead of quietly fetching nothing.
+  // Pause in Settings: the run ends here, deliberately and visibly, instead of quietly fetching nothing.
   return [{ json: { skip: true, reason: 'paused', config, topics, warnings, counts } }];
 }
 

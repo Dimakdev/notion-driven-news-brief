@@ -99,7 +99,7 @@ for (const c of clusters) {
   const muted = itemTopics.flatMap((t) => t.minusSignals).find((w) => haystack.includes(w));
   if (muted) { counters.dropped_minus_signal += 1; bump(counters.minus_hits, muted); continue; }
 
-  // A topic with an empty Сигнали list has its keyword filter switched off on purpose: it accepts
+  // A topic with an empty Signals list has its keyword filter switched off on purpose: it accepts
   // everything in the window and pays the model to decide.
   const matched = [];
   let openTopic = false;

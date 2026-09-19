@@ -28,7 +28,7 @@ for (let ci = 0; ci < answers.length; ci++) {
     out.push({
       json: {
         _candidate: {
-          name: String(c.name || '').trim().slice(0, 80) || '(без назви)',
+          name: String(c.name || '').trim().slice(0, 80) || '(unnamed)',
           url,
           type,
           why: String(c.why || c.reason || '').trim().slice(0, 200),

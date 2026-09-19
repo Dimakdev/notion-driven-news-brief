@@ -15,7 +15,7 @@ return rows.map((row, i) => ({
   json: {
     properties: {
       ...row.properties,
-      ...(briefId ? { 'Бриф': { relation: [{ id: briefId }] } } : {}),
+      ...(briefId ? { 'Brief': { relation: [{ id: briefId }] } } : {}),
     },
     _hash: row._hash,
     _brief_page_id: briefId,

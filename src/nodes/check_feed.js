@@ -15,16 +15,16 @@ if (status >= 400) {
   return { json: { _fetch_failed: true, _fetch_error: `HTTP ${status}`, _is_xml: false } };
 }
 if (!head) {
-  return { json: { _fetch_failed: true, _fetch_error: 'порожня відповідь', _is_xml: false } };
+  return { json: { _fetch_failed: true, _fetch_error: 'empty response', _is_xml: false } };
 }
 if (!/^\s*(<\?xml|<rss|<feed|<rdf)/i.test(head)) {
-  // Name what it actually is. "не фід: віддає HTML-сторінку" in the source note three weeks later tells
+  // Name what it actually is. "not a feed: serves an HTML page" in the source note three weeks later tells
   // you to go find the new address; "parse error" tells you nothing.
   return {
     json: {
       _fetch_failed: true,
       _is_xml: false,
-      _fetch_error: /<!doctype html|<html/i.test(head) ? 'не фід: віддає HTML-сторінку' : 'не фід: невідомий формат',
+      _fetch_error: /<!doctype html|<html/i.test(head) ? 'not a feed: serves an HTML page' : 'not a feed: unknown format',
     },
   };
 }

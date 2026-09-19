@@ -9,7 +9,7 @@ the one to open when something does not work.
 |---|---|---|
 | `N8N_API_KEY` | n8n → Settings → n8n API → Create an API key | `deploy.py` cannot import anything |
 | `N8N_BASE_URL` | `http://localhost:5678` unless you moved it | same |
-| `PUBLIC_BASE_URL` | the address n8n answers on from outside | only used by scripts; the workflow reads `Адреса n8n` from Notion |
+| `PUBLIC_BASE_URL` | the address n8n answers on from outside | only used by scripts; the workflow reads `n8n address` from Notion |
 | `NOTION_TOKEN` | <https://www.notion.so/my-integrations> → internal integration | every Notion call fails |
 | `NOTION_PARENT_PAGE_ID` | the page the databases are created under | only needed for `--create-databases` |
 | `NOTION_DB_*` | printed by `deploy.py --create-databases` | the workflow has nowhere to read or write |
@@ -40,6 +40,12 @@ A Notion database has a **database id** — 32 hex characters, visible in the pa
 (`/v1/databases/<id>/query`, version `2022-06-28`) accepts only the first. The second returns
 `404 object_not_found` and is indistinguishable from a permissions problem.
 
+### Renaming a select option
+
+If you ever rename a select option through the API, keep the option's `id` and change only its `name`.
+Send the list with the ids stripped and Notion creates brand-new options instead of renaming the old
+ones — every page that pointed at them is silently left empty. Renaming in the Notion UI is safe.
+
 ## Deploy
 
 ```bash
@@ -69,9 +75,9 @@ build script prints the full list of placeholders.
 
 ## Connecting your own source
 
-1. A row in `Джерела`: name, address, type, `Статус = Активне`, and at least one topic in `Теми`.
+1. A row in `Sources`: name, address, type, `Status = Active`, and at least one topic in `Topics`.
 2. If the type is new, one entry in `SOURCES` in `src/nodes/build_fetch_plan.js` and one option in the
-   `Тип` column, then `python scripts/build_workflow.py && python scripts/deploy.py`.
+   `Type` column, then `python scripts/build_workflow.py && python scripts/deploy.py`.
 
 A source linked to no topic is never fetched — this is deliberate, not a bug.
 
@@ -88,10 +94,10 @@ and they are worth reading before promising anyone a date.
 | Every Notion call 404s | integration not connected to the page, or a data-source id instead of a database id |
 | `The requested webhook is not registered` | the workflow is not active, or the path is in `options.path` instead of `parameters.path` |
 | Activation fails with `Bad request` | a trigger cannot register — most often the Telegram Trigger against a private address. Disable it and activate again |
-| Brief arrives, "Читати оригінал" is plain text | `Адреса n8n` is not public; Telegram will not linkify a private address. This is handled — links point straight at the article instead |
+| Brief arrives, the "read the original" line is plain text | `n8n address` is not public; Telegram will not linkify a private address. This is handled — links point straight at the article instead |
 | The same articles arrive every day | the seen-index is not being written. Check `staticData` on the workflow; a redeploy that dropped it is the usual cause |
-| A topic produces nothing | no live sources, an empty `Критерій`, or a threshold nothing reaches. `python scripts/run_tests.py --case config` names all three |
-| Brief is empty but sources are fine | look at the score distribution in `Стрічка`. If everything clusters just below the bar, the threshold is too high for that topic |
+| A topic produces nothing | no live sources, an empty `Criterion`, or a threshold nothing reaches. `python scripts/run_tests.py --case config` names all three |
+| Brief is empty but sources are fine | look at the score distribution in `Feed`. If everything clusters just below the bar, the threshold is too high for that topic |
 
 ## Checking it
 

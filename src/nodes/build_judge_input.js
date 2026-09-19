@@ -24,6 +24,11 @@ const config = head._config || items[0]?._config || {};
 const topicBlock = topics.map((t, i) => `- id: t${i + 1}\n  name: ${t.name}\n  wants: ${t.criterion}`).join('\n');
 const topicMap = topics.map((t) => t.id);
 
+// The prompt is told the language by name, not by code: a model writes better Ukrainian when
+// asked for "Ukrainian" than when handed "uk".
+const LANGS = {'en': 'English', 'uk': 'Ukrainian', 'de': 'German', 'fr': 'French', 'es': 'Spanish', 'pl': 'Polish'};
+const language = LANGS[(config.lang || 'en')] || 'English';
+
 const chunks = [];
 for (let i = 0; i < items.length; i += CHUNK) {
   const slice = items.slice(i, i + CHUNK);
@@ -44,6 +49,7 @@ for (let i = 0; i < items.length; i += CHUNK) {
       prompt_topics: topicBlock,
       prompt_articles: articles,
       expected: slice.length,
+      prompt_language: language,
       _config: config,
       _topics: topics,
       ...(chunks.length === 0 ? {

@@ -2,7 +2,7 @@
 //
 // The rule this node exists to protect: the threshold decides what ships, and nothing decides how
 // many. Fifteen articles above the bar means a fifteen-item brief. One means one. None means the
-// brief says "нічого" and stops. There is no cap anywhere below this line.
+// brief says "nothing today" and stops. There is no cap anywhere below this line.
 // A chain node answers with its output and nothing else: the chunk metadata that went in — which
 // article each #number is, and which topic each label means — does not come out the other side. The
 // chain is one-in one-out, so the request for answer N is request N of the node that built them.
@@ -91,7 +91,7 @@ const counters = {
   included: included.length,
 };
 
-// Score distribution: the honest way to tune Поріг later. If everything clusters at 55 and the bar is
+// Score distribution: the honest way to tune the Threshold later. If everything clusters at 55 and the bar is
 // 60, the brief looks empty for a reason the user can actually see.
 const buckets = { '0-39': 0, '40-59': 0, '60-79': 0, '80-100': 0 };
 for (const s of scored) {

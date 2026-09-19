@@ -24,7 +24,7 @@ engine's work. Nothing about the user's interests is compiled into the graph.
 
 An hourly schedule instead of a cron at 05:00 is deliberate: the time of day is part of what the user
 controls, and a cron expression inside a node is not editable from Notion. The gate reads only the
-`Налаштування` table — one small query per hour — and the heavier tables are read only when it opens.
+`Settings` table — one small query per hour — and the heavier tables are read only when it opens.
 The gate also holds the once-a-day guard, so a restart or a clock change cannot produce two briefs.
 
 ## The daily chain
@@ -33,7 +33,7 @@ The gate also holds the once-a-day guard, so a restart or a clock change cannot 
 |---|---|---|
 | 1 | Every hour | schedule trigger |
 | 2 | Notion: Settings | one query, the cheapest possible gate input |
-| 3 | Gate | decides brief / review / nothing; honours `Пауза`; guards against a second run |
+| 3 | Gate | decides brief / review / nothing; honours `Pause`; guards against a second run |
 | 4 | Brief hour? | IF |
 | 5 | Notion: Topics → Notion: Sources | **sequential, not parallel** — see *Races* below |
 | 6 | Load config | three tables become one config object; defaults applied; broken topics named |
@@ -82,7 +82,7 @@ ever sent becomes new again.
 ### Judge verdict
 
 ```json
-{ "i": 0, "topic_id": "t2", "score": 78, "reason": "збіг із критерієм: семантичний кеш" }
+{ "i": 0, "topic_id": "t2", "score": 78, "reason": "matches the criterion: semantic cache" }
 ```
 
 Topics are labelled `t1..tN` in the prompt and mapped back in code. Real Notion ids are 32 hex
@@ -96,14 +96,14 @@ cross-source clustering → muted words → keywords. A real morning: 2281 fetch
 1 duplicate, 46 with no keyword match, 10 to the model.
 
 The keyword step is the only one that can cause a false negative, so it has an escape hatch: a topic
-with an **empty** `Сигнали` list skips it entirely and sends everything in the window to the model.
+with an **empty** `Signals` list skips it entirely and sends everything in the window to the model.
 
 **Stage two is a model and costs money.** One call per chunk of eight articles, with every topic's
 criterion inside it — not one call per article-and-topic pair, which would multiply the bill by the
 number of topics and let the same article arrive twice under two headings.
 
 **The threshold decides what ships; nothing decides how many.** There is no cap in the code. The only
-limit is `Стеля бюджету`, which caps how many candidates reach the model — a guard on cost, not on
+limit is `Budget ceiling`, which caps how many candidates reach the model — a guard on cost, not on
 output — and when it bites the brief says so in its own footer.
 
 ## Memory, in three places
@@ -111,8 +111,8 @@ output — and when it bites the brief says so in its own footer.
 | What | Where | Why there |
 |---|---|---|
 | Seen-index (hashes + dates) | n8n workflow static data | machine state; the user never looks at it, and 180 rows a day would make a Notion table unusable in a quarter |
-| Archive (what was sent) | Notion `Стрічка` | the user does look at this; ~6 rows a day |
-| Metrics (aggregates) | Notion `Прогони` | one row a day carries every number the archive would otherwise have to be scanned for |
+| Archive (what was sent) | Notion `Feed` | the user does look at this; ~6 rows a day |
+| Metrics (aggregates) | Notion `Runs` | one row a day carries every number the archive would otherwise have to be scanned for |
 
 The index is **read** during filtering and **written** only after delivery succeeds. A run that dies
 anywhere before that costs nothing: the same articles are new again tomorrow. `deploy.py` carries the
@@ -123,7 +123,7 @@ static data across an update for the same reason.
 - **Fetches** retry with backoff and never throw; **writes** do not retry, so nothing is duplicated.
 - **Model calls** retry once, then continue without that chunk. A missing write-up still ships the
   article under its original headline.
-- **Source health** walks visible states: 3 consecutive failures → `Деградує`, 7 → `На пенсії`, and
+- **Source health** walks visible states: 3 consecutive failures → `Degrading`, 7 → `Retired`, and
   the brief's footer names anything that has gone quiet. Silent thinning is the worst failure mode
   this kind of system has, because it looks like a slow news week.
 - **Error workflow** sends one alert naming the node, the message and the execution id, and states
@@ -153,7 +153,7 @@ repeated itself every morning while looking perfectly healthy.
 | 35 | Parse proposals | shape-checks addresses; `http(s)` only |
 | 36 | Probe candidate | **fetches every one**, as text, never throwing |
 | 37 | Validate sources | parses? enough entries? published in the past fortnight? not a duplicate? |
-| 38 | Build source rows → Notion: new source | survivors land as `Запропоновано`, with measured numbers |
+| 38 | Build source rows → Notion: new source | survivors land as `Proposed`, with measured numbers |
 | 39 | Split topics to clear → Notion: clear checkbox | untick the request, found or not — otherwise it repeats every fifteen minutes |
 | 40 | Report discovery | what passed, with numbers, and what was rejected, with reasons |
 
@@ -163,12 +163,12 @@ whole discovery run with it, which is the same failure a dead feed caused on the
 ## Weekly review branch
 
 Rides the same gate as the brief, so it arrives with the morning rather than at an odd hour. It reads
-the past week from `Стрічка`, reports how much was opened, lists what was not, and resets the
-`Розбір зараз` flag afterwards so asking for it early is a one-shot.
+the past week from `Feed`, reports how much was opened, lists what was not, and resets the
+`Review now` flag afterwards so asking for it early is a one-shot.
 
 It carries **no buttons**. The Telegram node fixes its keyboard at build time, so a list that varies
 week to week cannot be a row of buttons without contortions — and a callback needs a public address,
-which a local install does not have. Verdicts are set in `Стрічка` instead, which is where the rest of
+which a local install does not have. Verdicts are set in `Feed` instead, which is where the rest of
 the control panel already lives.
 
 ## Adapters

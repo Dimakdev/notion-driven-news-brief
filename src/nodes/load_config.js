@@ -6,13 +6,14 @@
 // where a number is hard-coded, and each one is also a row in the Settings table, so the user can
 // override it without touching this file.
 const DEFAULTS = {
-  windowHours: 24,      // Topics -> Вікно
-  threshold: 60,        // Topics -> Поріг: score above this ships. NOT a cap on how many ship.
-  budgetCeiling: 250,   // Settings -> Стеля бюджету: max candidates handed to the model per run
-  memoryDays: 30,       // Settings -> Вікно памʼяті: how long a URL stays in the seen-index
+  windowHours: 24,      // Topics -> Window
+  threshold: 60,        // Topics -> Threshold: score above this ships. NOT a cap on how many ship.
+  budgetCeiling: 250,   // Settings -> Budget ceiling: max candidates handed to the model per run
+  memoryDays: 30,       // Settings -> Memory window: how long a URL stays in the seen-index
   briefTime: '05:00',
   channel: 'telegram',
-  weeklyReviewDay: 'неділя',
+  lang: 'en',        // Settings -> Brief language: the digest's own words
+  weeklyReviewDay: 'sunday',
 };
 
 // n8n's Notion node returns either the raw API page or a "simplified" shape depending on its options
@@ -51,13 +52,13 @@ function pages(nodeName) {
 
 const id = (page) => String(page.id || page.page_id || '').replace(/-/g, '');
 const norm = (s) => String(s || '').trim().toLowerCase();
-const isOn = (v) => ['увімкнено', 'так', 'on', 'true', 'yes', '1'].includes(norm(v));
+const isOn = (v) => ['on', 'yes', 'on', 'true', 'yes', '1'].includes(norm(v));
 
 // ---------------------------------------------------------------- settings
 const settings = {};
 for (const page of pages('Notion: Settings')) {
-  const key = norm(prop(page, 'Ключ'));
-  if (key) settings[key] = String(prop(page, 'Значення') ?? '').trim();
+  const key = norm(prop(page, 'Key'));
+  if (key) settings[key] = String(prop(page, 'Value') ?? '').trim();
 }
 const num = (key, fallback) => {
   const n = Number(settings[key]);
@@ -65,41 +66,44 @@ const num = (key, fallback) => {
 };
 
 const config = {
-  paused: isOn(settings['пауза']),
-  channel: norm(settings['канал']) || DEFAULTS.channel,
-  briefTime: settings['час брифу'] || DEFAULTS.briefTime,
-  budgetCeiling: num('стеля бюджету', DEFAULTS.budgetCeiling),
-  memoryDays: num('вікно памʼяті', DEFAULTS.memoryDays),
-  weeklyReview: isOn(settings['тижневий розбір']),
-  weeklyReviewDay: norm(settings['день розбору']) || DEFAULTS.weeklyReviewDay,
-  reviewNow: isOn(settings['розбір зараз']),
+  paused: isOn(settings['pause']),
+  channel: norm(settings['channel']) || DEFAULTS.channel,
+  briefTime: settings['brief time'] || DEFAULTS.briefTime,
+  budgetCeiling: num('budget ceiling', DEFAULTS.budgetCeiling),
+  memoryDays: num('memory window', DEFAULTS.memoryDays),
+  weeklyReview: isOn(settings['weekly review']),
+  weeklyReviewDay: norm(settings['review day']) || DEFAULTS.weeklyReviewDay,
+  reviewNow: isOn(settings['review now']),
   // n8n blocks $env inside Code nodes by default, and asking the user to flip a container flag to read
-  // one address would be a poor trade. It lives in Налаштування like everything else the user can set.
-  publicBase: String(settings['адреса n8n'] || 'http://localhost:5678').replace(/\/$/, ''),
+  // one address would be a poor trade. It lives in Settings like everything else the user can set.
+  publicBase: String(settings['n8n address'] || 'http://localhost:5678').replace(/\/$/, ''),
+  // Which language the digest is written in. The model is told this, and the handful of fixed
+  // strings around it follow. Everything else in the system stays English.
+  lang: (norm(settings['brief language']) || DEFAULTS.lang).slice(0, 2),
   runDate: DateTime.now().toISODate(),
 };
 
 // ---------------------------------------------------------------- topics
 const topics = [];
 for (const page of pages('Notion: Topics')) {
-  if (prop(page, 'Статус') !== 'Активна') continue;
-  const signals = (prop(page, 'Сигнали') || []).map(norm).filter(Boolean);
+  if (prop(page, 'Status') !== 'Active') continue;
+  const signals = (prop(page, 'Signals') || []).map(norm).filter(Boolean);
   topics.push({
     id: id(page),
-    name: prop(page, 'Тема') || '(без назви)',
+    name: prop(page, 'Topic') || '(unnamed)',
     // The text the model judges against. An empty criterion would make every score meaningless,
     // so such a topic is skipped loudly rather than silently mis-scoring everything.
-    criterion: (prop(page, 'Критерій') || '').trim(),
+    criterion: (prop(page, 'Criterion') || '').trim(),
     signals,
-    // An empty Сигнали list is a deliberate escape hatch: it turns the keyword filter OFF for this
+    // An empty Signals list is a deliberate escape hatch: it turns the keyword filter OFF for this
     // topic, so everything inside the time window reaches the model. Costs more, misses nothing.
     keywordFilter: signals.length > 0,
-    minusSignals: (prop(page, 'Мінус-сигнали') || []).map(norm).filter(Boolean),
-    languages: prop(page, 'Мови') || [],
-    windowHours: Number(prop(page, 'Вікно')) > 0 ? Number(prop(page, 'Вікно')) : DEFAULTS.windowHours,
-    threshold: Number.isFinite(Number(prop(page, 'Поріг'))) ? Number(prop(page, 'Поріг')) : DEFAULTS.threshold,
-    priority: prop(page, 'Пріоритет') || '⚡ Medium',
-    wantsDiscovery: prop(page, '🔍 Знайти джерела') === true,
+    minusSignals: (prop(page, 'Muted') || []).map(norm).filter(Boolean),
+    languages: prop(page, 'Languages') || [],
+    windowHours: Number(prop(page, 'Window')) > 0 ? Number(prop(page, 'Window')) : DEFAULTS.windowHours,
+    threshold: Number.isFinite(Number(prop(page, 'Threshold'))) ? Number(prop(page, 'Threshold')) : DEFAULTS.threshold,
+    priority: prop(page, 'Priority') || '⚡ Medium',
+    wantsDiscovery: prop(page, 'Find sources') === true,
     sourceIds: [],
   });
 }
@@ -114,18 +118,18 @@ const usableTopics = topics.filter((t) => t.criterion);
 const byId = new Map(usableTopics.map((t) => [t.id, t]));
 const sources = [];
 for (const page of pages('Notion: Sources')) {
-  const status = prop(page, 'Статус');
-  if (status !== 'Активне' && status !== 'Деградує') continue;  // degraded still gets a chance to recover
-  const topicIds = (prop(page, 'Теми') || []).map((r) => String(r).replace(/-/g, ''));
+  const status = prop(page, 'Status');
+  if (status !== 'Active' && status !== 'Degrading') continue;  // degraded still gets a chance to recover
+  const topicIds = (prop(page, 'Topics') || []).map((r) => String(r).replace(/-/g, ''));
   const linked = topicIds.filter((tid) => byId.has(tid));
   if (linked.length === 0) continue;                            // a source nobody listens to is not fetched
   const source = {
     id: id(page),
-    name: prop(page, 'Джерело') || '(без назви)',
-    url: prop(page, 'Адреса') || '',
-    type: norm(prop(page, 'Тип')) || 'rss',
+    name: prop(page, 'Source') || '(unnamed)',
+    url: prop(page, 'Address') || '',
+    type: norm(prop(page, 'Type')) || 'rss',
     status,
-    failures: Number(prop(page, 'Поспіль невдач')) || 0,
+    failures: Number(prop(page, 'Failures in a row')) || 0,
     topicIds: linked,
   };
   if (!source.url) continue;

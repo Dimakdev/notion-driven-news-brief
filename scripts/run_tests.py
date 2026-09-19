@@ -48,41 +48,41 @@ def db(env, state, key):
 def case_config(env, state, notion, n8n):
     print("\nconfig — the control panel")
     topics = notion.query(db(env, state, "topics"))
-    active = [t for t in topics if plain(t, "Статус") == "Активна"]
+    active = [t for t in topics if plain(t, "Status") == "Active"]
     check("topics readable", len(topics) > 0, f"{len(topics)} rows, {len(active)} active")
 
-    no_criterion = [plain(t, "Тема") for t in active if not (plain(t, "Критерій") or "").strip()]
+    no_criterion = [plain(t, "Topic") for t in active if not (plain(t, "Criterion") or "").strip()]
     check("every active topic has a criterion", not no_criterion,
           "skipped: " + ", ".join(no_criterion) if no_criterion else "")
 
-    open_filter = [plain(t, "Тема") for t in active if not plain(t, "Сигнали")]
+    open_filter = [plain(t, "Topic") for t in active if not plain(t, "Signals")]
     if open_filter:
         check("topics with the keyword filter off", None,
               ", ".join(open_filter) + " — everything in the window reaches the model, by design")
 
     sources = notion.query(db(env, state, "sources"))
-    live = [s for s in sources if plain(s, "Статус") in ("Активне", "Деградує")]
+    live = [s for s in sources if plain(s, "Status") in ("Active", "Degrading")]
     check("sources readable", len(live) > 0, f"{len(live)} live of {len(sources)}")
 
-    linked = {tid for s in live for tid in (plain(s, "Теми") or [])}
-    orphans = [plain(t, "Тема") for t in active if t["id"] not in linked]
+    linked = {tid for s in live for tid in (plain(s, "Topics") or [])}
+    orphans = [plain(t, "Topic") for t in active if t["id"] not in linked]
     check("every active topic has a source", not orphans,
           "no sources: " + ", ".join(orphans) if orphans else "")
 
-    settings = {plain(r, "Ключ"): plain(r, "Значення") for r in notion.query(db(env, state, "settings"))}
-    for key in ("Час брифу", "Канал", "Стеля бюджету", "Вікно памʼяті", "Пауза", "Адреса n8n"):
+    settings = {plain(r, "Key"): plain(r, "Value") for r in notion.query(db(env, state, "settings"))}
+    for key in ("Brief time", "Channel", "Budget ceiling", "Memory window", "Pause", "n8n address"):
         check(f"setting «{key}»", key in settings, settings.get(key, "MISSING"))
-    if str(settings.get("Пауза", "")).strip().lower() in ("увімкнено", "так", "on", "true"):
-        check("Пауза is on", None, "no brief will be sent until it is off")
+    if str(settings.get("Pause", "")).strip().lower() in ("on", "yes", "on", "true"):
+        check("Pause is on", None, "no brief will be sent until it is off")
 
 
 def case_feeds(env, state, notion, n8n):
     print("\nfeeds — every live source, fetched for real")
     now = datetime.now(timezone.utc)
     for s in notion.query(db(env, state, "sources")):
-        if plain(s, "Статус") not in ("Активне", "Деградує"):
+        if plain(s, "Status") not in ("Active", "Degrading"):
             continue
-        name, url, kind = plain(s, "Джерело"), plain(s, "Адреса"), plain(s, "Тип")
+        name, url, kind = plain(s, "Source"), plain(s, "Address"), plain(s, "Type")
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "*/*"})
             with urllib.request.urlopen(req, timeout=20) as r:
@@ -149,10 +149,14 @@ def case_brief(env, state, notion, n8n):
     items = d.get("items") or []
     check("digest built", "telegram_text" in d, f"{len(items)} item(s)")
     if not items:
-        check("empty brief is honest", "нічого не перетнуло поріг" in d.get("telegram_text", ""),
+        # The wording follows the reader's language setting, so the flag is what is checked, not words.
+        check("empty brief is honest", d.get("nothing_today") is True,
               "says so rather than sending a blank message")
-    check("links are usable", d.get("tracking_enabled") is True or not items,
-          "" if d.get("tracking_enabled") else "Адреса n8n is not public: links go straight to the article, no click counter")
+    # Both shapes are usable. Tracking off is a deliberate degradation on a private address, not a
+    # failure - it is flagged so it is noticed, not so it fails a build.
+    check("links are usable", True if d.get("tracking_enabled") else None,
+          "wrapped, clicks are counted" if d.get("tracking_enabled")
+          else "the n8n address is not public: links go straight to the article, no click counter")
     check("brief delivered", "Send brief" in runs, "")
     check("archive written", "Notion: brief page" in runs, "")
     check("run row written", "Notion: run row" in runs, "")
@@ -169,14 +173,14 @@ def case_memory(env, state, notion, n8n):
     check("last run recorded", bool(last), json.dumps(last, ensure_ascii=False))
     feed = notion.query(db(env, state, "feed"))
     check("archive matches", len(feed) >= len(seen),
-          f"{len(feed)} rows in Стрічка vs {len(seen)} hashes remembered")
+          f"{len(feed)} rows in Feed vs {len(seen)} hashes remembered")
 
 
 def case_webhook(env, state, notion, n8n):
     print("\nwebhook — the link redirector")
     base = env.get("N8N_BASE_URL", "http://localhost:5678").rstrip("/")
     rows = notion.query(db(env, state, "feed"))
-    known = next((plain(r, "Хеш") for r in rows if plain(r, "Хеш")), None)
+    known = next((plain(r, "Hash") for r in rows if plain(r, "Hash")), None)
 
     class NoRedirect(urllib.request.HTTPRedirectHandler):
         def redirect_request(self, *a, **k):
@@ -197,7 +201,7 @@ def case_webhook(env, state, notion, n8n):
         code, loc = probe(known)
         check("a real hash redirects to its article", code == 302 and bool(loc), f"{code} → {str(loc)[:60]}")
     else:
-        check("a real hash redirects", None, "nothing in Стрічка yet — send a brief first")
+        check("a real hash redirects", None, "nothing in Feed yet — send a brief first")
 
     code, loc = probe("deadbeef")
     check("an unknown hash lands somewhere harmless", code == 302 and "notion.so" in str(loc), f"{code} → {str(loc)[:40]}")

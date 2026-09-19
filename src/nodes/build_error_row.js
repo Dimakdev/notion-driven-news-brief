@@ -15,13 +15,13 @@ const message = String(err.message || err.description || 'no message').slice(0, 
 const execId = e.execution?.id;
 
 const alert = [
-  `⚠️ <b>Бриф упав</b> · ${when}`,
-  `Нода: <code>${esc(node)}</code>`,
+  `⚠️ <b>The brief crashed</b> · ${when}`,
+  `Node: <code>${esc(node)}</code>`,
   esc(message),
-  execId ? `Прогін <code>${esc(execId)}</code> — відкрий його в n8n, дані збережені` : null,
+  execId ? `Execution <code>${esc(execId)}</code> — open it in n8n, the data is kept` : null,
   // Said plainly so a failure does not look like a quiet day: nothing was marked as seen, so the same
   // articles are still waiting tomorrow.
-  'Індекс баченого не оновлено — ці статті прийдуть завтра.',
+  'The seen-index was not advanced — these articles will come round again tomorrow.',
 ].filter(Boolean).join('\n');
 
 return [{ json: { alert, node, message, workflow_id: wf.id || null, execution_id: execId || null } }];

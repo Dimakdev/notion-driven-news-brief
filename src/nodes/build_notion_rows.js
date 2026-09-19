@@ -14,27 +14,27 @@ const rel = (id) => (id ? [{ id: String(id) }] : []);
 // from a day to its items, and from an item to the morning it arrived in.
 const briefPage = {
   properties: {
-    'Бриф': { title: rich(d.page_title) },
-    'Дата': { date: { start: iso } },
-    'Розглянуто': { number: Number(d.counters?.considered || 0) },
-    'Включено': { number: Number(d.items?.length || 0) },
+    'Brief': { title: rich(d.page_title) },
+    'Date': { date: { start: iso } },
+    'Considered': { number: Number(d.counters?.considered || 0) },
+    'Included': { number: Number(d.items?.length || 0) },
   },
   markdown: d.page_markdown,
 };
 
 const rows = (d.items || []).map((it) => ({
   properties: {
-    'Заголовок': { title: rich(it.title) },
-    'Посилання': { url: it.url || null },
-    'Хеш': { rich_text: rich(it.hash) },
-    'Опубліковано': it.published_at ? { date: { start: it.published_at } } : { date: null },
-    'Дата брифу': { date: { start: iso } },
-    'Бал': { number: Number(it.score) || 0 },
-    'Причина': { rich_text: rich(it.reason) },
-    'Дублі': { number: Number(it.duplicates) || 1 },
-    'Джерело': { relation: rel(it.source_id) },
-    'Тема': { relation: rel(it.topic_id) },
-    // 'Бриф' is filled by the next node once the page id exists.
+    'Title': { title: rich(it.title) },
+    'Link': { url: it.url || null },
+    'Hash': { rich_text: rich(it.hash) },
+    'Published': it.published_at ? { date: { start: it.published_at } } : { date: null },
+    'Brief date': { date: { start: iso } },
+    'Score': { number: Number(it.score) || 0 },
+    'Reason': { rich_text: rich(it.reason) },
+    'Duplicates': { number: Number(it.duplicates) || 1 },
+    'Source': { relation: rel(it.source_id) },
+    'Topic': { relation: rel(it.topic_id) },
+    // 'Brief' is filled by the next node once the page id exists.
   },
   _hash: it.hash,
 }));
