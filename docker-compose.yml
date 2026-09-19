@@ -1,0 +1,30 @@
+# Minimal self-hosted n8n for this workflow. Start:  docker compose up -d   -> http://localhost:5678
+# First visit creates the owner account. Then: Settings -> n8n API -> create a key -> .env N8N_API_KEY.
+#
+# NOTE on links: the digest wraps every article link through this n8n so a click can be recorded.
+# On plain localhost those links only work on this machine. To read the brief on a phone, put n8n behind
+# a public URL (a tunnel or a small VPS) and set WEBHOOK_URL / PUBLIC_BASE_URL to it. Telegram callbacks
+# need the same public URL, so this is one decision, not two.
+services:
+  n8n:
+    image: docker.n8n.io/n8nio/n8n:latest
+    container_name: n8n-brief
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+      - GENERIC_TIMEZONE=America/Vancouver
+      - TZ=America/Vancouver
+      # the seen-index lives in workflow static data, so executions data is not the source of truth,
+      # but keeping failed runs makes a bad morning debuggable
+      - EXECUTIONS_DATA_SAVE_ON_ERROR=all
+      - EXECUTIONS_DATA_SAVE_ON_SUCCESS=all
+    volumes:
+      - n8n_brief_data:/home/node/.n8n
+
+volumes:
+  n8n_brief_data:

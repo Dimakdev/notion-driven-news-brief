@@ -1,0 +1,190 @@
+{
+  "_comment": [
+    "The control panel, as data. scripts/deploy.py reads this file and creates the databases in whatever",
+    "Notion workspace you point it at, so nothing here is tied to one account.",
+    "Two passes: databases first (no relations), then the relations, because a relation needs the id of a",
+    "database that does not exist yet on the first pass. Multi-select options must exist before any row is",
+    "written, so the seed vocabulary is declared here rather than created on the fly."
+  ],
+  "databases": {
+    "topics": {
+      "title": "Теми",
+      "env": "NOTION_DB_TOPICS",
+      "description": "Що ловити. Критерій — головне поле: ним судить модель. Поріг — ручка гучності теми.",
+      "properties": {
+        "Тема": { "title": {} },
+        "Статус": {
+          "select": { "options": [
+            { "name": "Активна", "color": "green" },
+            { "name": "На паузі", "color": "gray" }
+          ] }
+        },
+        "Критерій": { "rich_text": {} },
+        "Сигнали": { "multi_select": { "options": [] } },
+        "Мінус-сигнали": { "multi_select": { "options": [] } },
+        "Мови": {
+          "multi_select": { "options": [
+            { "name": "uk", "color": "blue" },
+            { "name": "en", "color": "blue" }
+          ] }
+        },
+        "Вікно": { "number": { "format": "number" } },
+        "Поріг": { "number": { "format": "number" } },
+        "Пріоритет": {
+          "select": { "options": [
+            { "name": "🔥 High", "color": "red" },
+            { "name": "⚡ Medium", "color": "yellow" },
+            { "name": "💤 Low", "color": "gray" }
+          ] }
+        },
+        "🔍 Знайти джерела": { "checkbox": {} }
+      },
+      "descriptions": {
+        "Статус": "Тільки Активні йдуть у щоденний прогін",
+        "Критерій": "Що саме цікавить і що ні, людською мовою. Проти цього тексту модель ставить бал",
+        "Сигнали": "Дешевий відсів. Поняття + імена. ПОРОЖНЄ ПОЛЕ вимикає відсів за словами для цієї теми",
+        "Мінус-сигнали": "Стоп-слова. Спрацювало — виліт без розмов",
+        "Вікно": "Годин назад, дефолт 24",
+        "Поріг": "Бал 0-100, вище якого пункт іде в бриф. Дефолт 60",
+        "Пріоритет": "Порядок груп у брифі",
+        "🔍 Знайти джерела": "Постав галочку — запуститься розвідка. Система зніме її сама"
+      }
+    },
+
+    "sources": {
+      "title": "Джерела",
+      "env": "NOTION_DB_SOURCES",
+      "description": "Звідки читати. Статус проходить видимі стадії — джерело не помирає мовчки.",
+      "properties": {
+        "Джерело": { "title": {} },
+        "Адреса": { "url": {} },
+        "Тип": {
+          "select": { "options": [
+            { "name": "rss", "color": "blue" },
+            { "name": "atom", "color": "blue" },
+            { "name": "youtube", "color": "red" },
+            { "name": "reddit", "color": "orange" },
+            { "name": "hn", "color": "orange" },
+            { "name": "json", "color": "purple" },
+            { "name": "web_search", "color": "gray" }
+          ] }
+        },
+        "Статус": {
+          "select": { "options": [
+            { "name": "Запропоновано", "color": "yellow" },
+            { "name": "Перевірено", "color": "blue" },
+            { "name": "Активне", "color": "green" },
+            { "name": "Деградує", "color": "orange" },
+            { "name": "На пенсії", "color": "gray" }
+          ] }
+        },
+        "Останній успіх": { "date": {} },
+        "Поспіль невдач": { "number": { "format": "number" } },
+        "Записів на тиждень": { "number": { "format": "number" } },
+        "Свіжість": { "date": {} },
+        "Хто запропонував": {
+          "select": { "options": [
+            { "name": "людина", "color": "blue" },
+            { "name": "агент", "color": "purple" }
+          ] }
+        },
+        "Нотатка": { "rich_text": {} }
+      },
+      "descriptions": {
+        "Адреса": "Адреса фіда або ендпойнта",
+        "Тип": "Визначає, який адаптер читає",
+        "Статус": "Тільки Активні читаються щоранку",
+        "Останній успіх": "Ставить кожен успішний фетч",
+        "Поспіль невдач": "3 — Деградує, 7 — На пенсії. Обнуляється успіхом",
+        "Записів на тиждень": "Виміряно валідатором при перевірці",
+        "Свіжість": "Дата останнього запису на момент перевірки",
+        "Нотатка": "Чому запропоновано, чому на пенсії"
+      }
+    },
+
+    "feed": {
+      "title": "Стрічка",
+      "env": "NOTION_DB_FEED",
+      "description": "Тільки надіслане. Архів + реакції. Індекс баченого живе не тут, а в static data n8n.",
+      "properties": {
+        "Заголовок": { "title": {} },
+        "Посилання": { "url": {} },
+        "Хеш": { "rich_text": {} },
+        "Опубліковано": { "date": {} },
+        "Дата брифу": { "date": {} },
+        "Бал": { "number": { "format": "number" } },
+        "Причина": { "rich_text": {} },
+        "Дублі": { "number": { "format": "number" } },
+        "Відкрито": { "date": {} },
+        "Вердикт": {
+          "select": { "options": [
+            { "name": "мимо", "color": "red" },
+            { "name": "📌 збережено", "color": "blue" }
+          ] }
+        }
+      },
+      "descriptions": {
+        "Посилання": "Адреса оригіналу",
+        "Хеш": "Ключ рядка. За ним /r?i=… знаходить пункт, коли ти натиснув посилання",
+        "Бал": "Скільки поставила модель. Видно розподіл — видно, куди ставити Поріг",
+        "Причина": "Який сигнал або критерій збігся",
+        "Дублі": "Скільки джерел дали той самий сюжет",
+        "Відкрито": "Коли натиснуто посилання. Порожньо = не відкрито",
+        "Вердикт": "Ставиться в тижневому розборі або вручну"
+      }
+    },
+
+    "runs": {
+      "title": "Прогони",
+      "env": "NOTION_DB_RUNS",
+      "description": "Один рядок на день. Звідси всі метрики — без сирої стрічки.",
+      "properties": {
+        "Дата": { "title": {} },
+        "Розглянуто": { "number": { "format": "number" } },
+        "Відсіяно правилом": { "number": { "format": "number" } },
+        "Відсіяно моделлю": { "number": { "format": "number" } },
+        "Включено": { "number": { "format": "number" } },
+        "Джерела JSON": { "rich_text": {} },
+        "Сигнали JSON": { "rich_text": {} },
+        "Помилки": { "rich_text": {} },
+        "Тривалість": { "number": { "format": "number" } }
+      },
+      "descriptions": {
+        "Джерела JSON": "Напр. {\"TechCrunch\": {\"ok\": true, \"items\": 22, \"included\": 2}}",
+        "Сигнали JSON": "Скільки разів спрацював кожен сигнал і мінус-сигнал. Нулі — мертві ключовики",
+        "Тривалість": "Секунд"
+      }
+    },
+
+    "settings": {
+      "title": "Налаштування",
+      "env": "NOTION_DB_SETTINGS",
+      "description": "Глобальні перемикачі. Щоб у n8n не заходити ніколи.",
+      "properties": {
+        "Ключ": { "title": {} },
+        "Значення": { "rich_text": {} },
+        "Опис": { "rich_text": {} }
+      }
+    },
+
+    "briefs": {
+      "title": "Брифи",
+      "env": "NOTION_DB_BRIEFS",
+      "description": "Архів брифів. Сторінка зі сталою адресою на кожен день — те, куди веде «повний бриф ↗».",
+      "properties": {
+        "Бриф": { "title": {} },
+        "Дата": { "date": {} },
+        "Розглянуто": { "number": { "format": "number" } },
+        "Включено": { "number": { "format": "number" } }
+      }
+    }
+  },
+
+  "relations": [
+    { "from": "sources", "property": "Теми", "to": "topics", "dual": "Джерела",
+      "description": "Які теми обслуговує" },
+    { "from": "feed", "property": "Джерело", "to": "sources", "dual": "Стрічка" },
+    { "from": "feed", "property": "Тема", "to": "topics", "dual": "Стрічка" },
+    { "from": "feed", "property": "Бриф", "to": "briefs", "dual": "Пункти" }
+  ]
+}
