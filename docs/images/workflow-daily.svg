@@ -1,154 +1,154 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1212 808" width="1212" height="808" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1032 1058" width="1032" height="1058" font-family="ui-sans-serif, -apple-system, 'Segoe UI', Roboto, sans-serif">
 <style>.bg{fill:#fff}.t{fill:#111827}.s{fill:#6b7280}@media (prefers-color-scheme: dark){.bg{fill:#0d1117}.t{fill:#e6edf3}.s{fill:#9198a1}.box{filter:brightness(.8) saturate(1.1)}}</style>
 <defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs>
-<rect class="bg" width="1212" height="808" fill="#ffffff"/>
-<text class="t" x="24" y="34" font-size="20" font-weight="600" fill="#111827">The daily brief, in the order it runs</text>
-<text class="s" x="24" y="56" font-size="13" fill="#6b7280">Read from the gate to the log. The json lane and the failure lane rejoin at Feeds; the weekly review hangs off the same gate.</text>
-<path d="M220,121.0 L258,121.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M462,121.0 L500,121.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M704,121.0 L742,121.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M946,121.0 L984,121.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M1090.0,150 L1090.0,170.0 L122.0,170.0 L122.0,182" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
-<path d="M220,219.0 L258,219.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M462,219.0 L500,219.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M704,219.0 L742,219.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M946,219.0 L984,219.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M1090.0,248 L1090.0,268.0 L122.0,268.0 L122.0,280" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
-<path d="M220,317.0 L258,317.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M462,317.0 L500,317.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M704,317.0 L742,317.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M946,317.0 L984,317.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M1090.0,346 L1090.0,366.0 L122.0,366.0 L122.0,378" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
-<path d="M220,415.0 L258,415.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M462,415.0 L500,415.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M704,415.0 L742,415.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M946,415.0 L984,415.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M1090.0,444 L1090.0,464.0 L122.0,464.0 L122.0,476" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
-<path d="M220,513.0 L258,513.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M462,513.0 L500,513.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M704,513.0 L742,513.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M946,513.0 L984,513.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M1090.0,542 L1090.0,562.0 L122.0,562.0 L122.0,574" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
-<path d="M220,611.0 L258,611.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M462,611.0 L500,611.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M704,611.0 L742,611.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M946,611.0 L984,611.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M1090.0,640 L1090.0,660.0 L122.0,660.0 L122.0,672" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
-<path d="M220,709.0 L258,709.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M462,709.0 L500,709.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<path d="M704,709.0 L742,709.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
-<rect class="box" x="24" y="92" width="196" height="58" rx="9" fill="#dcf2e6" stroke="#2f6f4f" stroke-width="1.7"/>
-<text x="33" y="107" font-size="10" fill="#2f6f4f" opacity=".65">1</text>
-<text x="122.0" y="125.0" text-anchor="middle" font-size="12.5" fill="#2f6f4f" font-weight="600">Every hour</text>
-<rect class="box" x="266" y="92" width="196" height="58" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
-<text x="275" y="107" font-size="10" fill="#2b5f9e" opacity=".65">2</text>
-<text x="364.0" y="125.0" text-anchor="middle" font-size="12.5" fill="#2b5f9e" font-weight="600">Notion: Settings</text>
-<rect class="box" x="508" y="92" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="517" y="107" font-size="10" fill="#8a5a00" opacity=".65">3</text>
-<text x="606.0" y="125.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Gate</text>
-<rect class="box" x="750" y="92" width="196" height="58" rx="9" fill="#eaecf0" stroke="#596070" stroke-width="1.7"/>
-<text x="759" y="107" font-size="10" fill="#596070" opacity=".65">4</text>
-<text x="848.0" y="125.0" text-anchor="middle" font-size="12.5" fill="#596070" font-weight="600">Brief hour?</text>
-<rect class="box" x="992" y="92" width="196" height="58" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
-<text x="1001" y="107" font-size="10" fill="#2b5f9e" opacity=".65">5</text>
-<text x="1090.0" y="125.0" text-anchor="middle" font-size="12.5" fill="#2b5f9e" font-weight="600">Notion: Topics</text>
-<rect class="box" x="24" y="190" width="196" height="58" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
-<text x="33" y="205" font-size="10" fill="#2b5f9e" opacity=".65">6</text>
-<text x="122.0" y="223.0" text-anchor="middle" font-size="12.5" fill="#2b5f9e" font-weight="600">Notion: Sources</text>
-<rect class="box" x="266" y="190" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="275" y="205" font-size="10" fill="#8a5a00" opacity=".65">7</text>
-<text x="364.0" y="223.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Load config</text>
-<rect class="box" x="508" y="190" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="517" y="205" font-size="10" fill="#8a5a00" opacity=".65">8</text>
-<text x="606.0" y="223.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Build fetch plan</text>
-<rect class="box" x="750" y="190" width="196" height="58" rx="9" fill="#eaecf0" stroke="#596070" stroke-width="1.7"/>
-<text x="759" y="205" font-size="10" fill="#596070" opacity=".65">9</text>
-<text x="848.0" y="223.0" text-anchor="middle" font-size="12.5" fill="#596070" font-weight="600">Lane</text>
-<rect class="box" x="992" y="190" width="196" height="58" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
-<text x="1001" y="205" font-size="10" fill="#2b5f9e" opacity=".65">10</text>
-<text x="1090.0" y="223.0" text-anchor="middle" font-size="12.5" fill="#2b5f9e" font-weight="600">Fetch feed (xml)</text>
-<rect class="box" x="24" y="288" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="33" y="303" font-size="10" fill="#8a5a00" opacity=".65">11</text>
-<text x="122.0" y="321.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Check feed</text>
-<rect class="box" x="266" y="288" width="196" height="58" rx="9" fill="#eaecf0" stroke="#596070" stroke-width="1.7"/>
-<text x="275" y="303" font-size="10" fill="#596070" opacity=".65">12</text>
-<text x="364.0" y="321.0" text-anchor="middle" font-size="12.5" fill="#596070" font-weight="600">Looks like a feed?</text>
-<rect class="box" x="508" y="288" width="196" height="58" rx="9" fill="#eaecf0" stroke="#596070" stroke-width="1.7"/>
-<text x="517" y="303" font-size="10" fill="#596070" opacity=".65">13</text>
-<text x="606.0" y="321.0" text-anchor="middle" font-size="12.5" fill="#596070" font-weight="600">Parse XML</text>
-<rect class="box" x="750" y="288" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="759" y="303" font-size="10" fill="#8a5a00" opacity=".65">14</text>
-<text x="848.0" y="321.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Attach source (xml)</text>
-<rect class="box" x="992" y="288" width="196" height="58" rx="9" fill="#eaecf0" stroke="#596070" stroke-width="1.7"/>
-<text x="1001" y="303" font-size="10" fill="#596070" opacity=".65">15</text>
-<text x="1090.0" y="321.0" text-anchor="middle" font-size="12.5" fill="#596070" font-weight="600">Feeds</text>
-<rect class="box" x="24" y="386" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="33" y="401" font-size="10" fill="#8a5a00" opacity=".65">16</text>
-<text x="122.0" y="419.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Normalize items</text>
-<rect class="box" x="266" y="386" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="275" y="401" font-size="10" fill="#8a5a00" opacity=".65">17</text>
-<text x="364.0" y="419.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Stage 1 filter</text>
-<rect class="box" x="508" y="386" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="517" y="401" font-size="10" fill="#8a5a00" opacity=".65">18</text>
-<text x="606.0" y="419.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Build judge input</text>
-<rect class="box" x="750" y="386" width="196" height="58" rx="9" fill="#eee2f8" stroke="#6b3fa0" stroke-width="1.7"/>
-<text x="759" y="401" font-size="10" fill="#6b3fa0" opacity=".65">19</text>
-<text x="848.0" y="419.0" text-anchor="middle" font-size="12.5" fill="#6b3fa0" font-weight="600">Judge relevance</text>
-<rect class="box" x="992" y="386" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="1001" y="401" font-size="10" fill="#8a5a00" opacity=".65">20</text>
-<text x="1090.0" y="419.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Parse judge</text>
-<rect class="box" x="24" y="484" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="33" y="499" font-size="10" fill="#8a5a00" opacity=".65">21</text>
-<text x="122.0" y="517.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Build writer input</text>
-<rect class="box" x="266" y="484" width="196" height="58" rx="9" fill="#eee2f8" stroke="#6b3fa0" stroke-width="1.7"/>
-<text x="275" y="499" font-size="10" fill="#6b3fa0" opacity=".65">22</text>
-<text x="364.0" y="517.0" text-anchor="middle" font-size="12.5" fill="#6b3fa0" font-weight="600">Write digest</text>
-<rect class="box" x="508" y="484" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="517" y="499" font-size="10" fill="#8a5a00" opacity=".65">23</text>
-<text x="606.0" y="517.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Compose digest</text>
-<rect class="box" x="750" y="484" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="759" y="499" font-size="10" fill="#8a5a00" opacity=".65">24</text>
-<text x="848.0" y="517.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Build Notion rows</text>
-<rect class="box" x="992" y="484" width="196" height="58" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
-<text x="1001" y="499" font-size="10" fill="#2b5f9e" opacity=".65">25</text>
-<text x="1090.0" y="517.0" text-anchor="middle" font-size="12.5" fill="#2b5f9e" font-weight="600">Notion: brief page</text>
-<rect class="box" x="24" y="582" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="33" y="597" font-size="10" fill="#8a5a00" opacity=".65">26</text>
-<text x="122.0" y="615.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Split feed rows</text>
-<rect class="box" x="266" y="582" width="196" height="58" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
-<text x="275" y="597" font-size="10" fill="#2b5f9e" opacity=".65">27</text>
-<text x="364.0" y="615.0" text-anchor="middle" font-size="12.5" fill="#2b5f9e" font-weight="600">Notion: feed row</text>
-<rect class="box" x="508" y="582" width="196" height="58" rx="9" fill="#d9f1fa" stroke="#1d7fa8" stroke-width="1.7"/>
-<text x="517" y="597" font-size="10" fill="#1d7fa8" opacity=".65">28</text>
-<text x="606.0" y="615.0" text-anchor="middle" font-size="12.5" fill="#1d7fa8" font-weight="600">Send brief</text>
-<rect class="box" x="750" y="582" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="759" y="597" font-size="10" fill="#8a5a00" opacity=".65">29</text>
-<text x="848.0" y="615.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Commit seen</text>
-<rect class="box" x="992" y="582" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="1001" y="597" font-size="10" fill="#8a5a00" opacity=".65">30</text>
-<text x="1090.0" y="615.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Build run row</text>
-<rect class="box" x="24" y="680" width="196" height="58" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
-<text x="33" y="695" font-size="10" fill="#2b5f9e" opacity=".65">31</text>
-<text x="122.0" y="713.0" text-anchor="middle" font-size="12.5" fill="#2b5f9e" font-weight="600">Notion: run row</text>
-<rect class="box" x="266" y="680" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="275" y="695" font-size="10" fill="#8a5a00" opacity=".65">32</text>
-<text x="364.0" y="713.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Source health</text>
-<rect class="box" x="508" y="680" width="196" height="58" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
-<text x="517" y="695" font-size="10" fill="#8a5a00" opacity=".65">33</text>
-<text x="606.0" y="713.0" text-anchor="middle" font-size="12.5" fill="#8a5a00" font-weight="600">Split source updates</text>
-<rect class="box" x="750" y="680" width="196" height="58" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
-<text x="759" y="695" font-size="10" fill="#2b5f9e" opacity=".65">34</text>
-<text x="848.0" y="713.0" text-anchor="middle" font-size="12.5" fill="#2b5f9e" font-weight="600">Notion: update source</text>
-<rect x="24" y="784" width="11" height="11" rx="3" fill="#dcf2e6" stroke="#2f6f4f" stroke-width="1.4"/>
-<text class="s" x="41" y="793.5" font-size="11.5" fill="#6b7280">trigger</text>
-<rect x="94.9" y="784" width="11" height="11" rx="3" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.4"/>
-<text class="s" x="111.9" y="793.5" font-size="11.5" fill="#6b7280">Notion / fetch</text>
-<rect x="212.7" y="784" width="11" height="11" rx="3" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.4"/>
-<text class="s" x="229.7" y="793.5" font-size="11.5" fill="#6b7280">code</text>
-<rect x="263.5" y="784" width="11" height="11" rx="3" fill="#eee2f8" stroke="#6b3fa0" stroke-width="1.4"/>
-<text class="s" x="280.5" y="793.5" font-size="11.5" fill="#6b7280">model</text>
-<rect x="321.0" y="784" width="11" height="11" rx="3" fill="#d9f1fa" stroke="#1d7fa8" stroke-width="1.4"/>
-<text class="s" x="338.0" y="793.5" font-size="11.5" fill="#6b7280">delivery</text>
-<rect x="398.6" y="784" width="11" height="11" rx="3" fill="#eaecf0" stroke="#596070" stroke-width="1.4"/>
-<text class="s" x="415.6" y="793.5" font-size="11.5" fill="#6b7280">control</text>
+<rect class="bg" width="1032" height="1058" fill="#ffffff"/>
+<text class="t" x="26" y="34" font-size="20" font-weight="600" fill="#111827">The daily brief, in the order it runs</text>
+<text class="s" x="26" y="56" font-size="13" fill="#6b7280">Read from the gate to the log. The json lane and the failure lane rejoin at Feeds; the weekly review hangs off the same gate.</text>
+<path d="M238,123.0 L274,123.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M494,123.0 L530,123.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M750,123.0 L786,123.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M900.0,154 L900.0,175.0 L132.0,175.0 L132.0,188" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<path d="M238,227.0 L274,227.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M494,227.0 L530,227.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M750,227.0 L786,227.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M900.0,258 L900.0,279.0 L132.0,279.0 L132.0,292" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<path d="M238,331.0 L274,331.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M494,331.0 L530,331.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M750,331.0 L786,331.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M900.0,362 L900.0,383.0 L132.0,383.0 L132.0,396" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<path d="M238,435.0 L274,435.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M494,435.0 L530,435.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M750,435.0 L786,435.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M900.0,466 L900.0,487.0 L132.0,487.0 L132.0,500" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<path d="M238,539.0 L274,539.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M494,539.0 L530,539.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M750,539.0 L786,539.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M900.0,570 L900.0,591.0 L132.0,591.0 L132.0,604" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<path d="M238,643.0 L274,643.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M494,643.0 L530,643.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M750,643.0 L786,643.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M900.0,674 L900.0,695.0 L132.0,695.0 L132.0,708" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<path d="M238,747.0 L274,747.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M494,747.0 L530,747.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M750,747.0 L786,747.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M900.0,778 L900.0,799.0 L132.0,799.0 L132.0,812" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<path d="M238,851.0 L274,851.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M494,851.0 L530,851.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M750,851.0 L786,851.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<path d="M900.0,882 L900.0,903.0 L132.0,903.0 L132.0,916" fill="none" stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>
+<path d="M238,955.0 L274,955.0" fill="none" stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>
+<rect class="box" x="26" y="92" width="212" height="62" rx="9" fill="#dcf2e6" stroke="#2f6f4f" stroke-width="1.7"/>
+<text x="35" y="107" font-size="10" fill="#2f6f4f" opacity=".65">1</text>
+<text x="132.0" y="127.0" text-anchor="middle" font-size="13.5" fill="#2f6f4f" font-weight="600">Every hour</text>
+<rect class="box" x="282" y="92" width="212" height="62" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
+<text x="291" y="107" font-size="10" fill="#2b5f9e" opacity=".65">2</text>
+<text x="388.0" y="127.0" text-anchor="middle" font-size="13.5" fill="#2b5f9e" font-weight="600">Notion: Settings</text>
+<rect class="box" x="538" y="92" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="547" y="107" font-size="10" fill="#8a5a00" opacity=".65">3</text>
+<text x="644.0" y="127.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Gate</text>
+<rect class="box" x="794" y="92" width="212" height="62" rx="9" fill="#eaecf0" stroke="#596070" stroke-width="1.7"/>
+<text x="803" y="107" font-size="10" fill="#596070" opacity=".65">4</text>
+<text x="900.0" y="127.0" text-anchor="middle" font-size="13.5" fill="#596070" font-weight="600">Brief hour?</text>
+<rect class="box" x="26" y="196" width="212" height="62" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
+<text x="35" y="211" font-size="10" fill="#2b5f9e" opacity=".65">5</text>
+<text x="132.0" y="231.0" text-anchor="middle" font-size="13.5" fill="#2b5f9e" font-weight="600">Notion: Topics</text>
+<rect class="box" x="282" y="196" width="212" height="62" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
+<text x="291" y="211" font-size="10" fill="#2b5f9e" opacity=".65">6</text>
+<text x="388.0" y="231.0" text-anchor="middle" font-size="13.5" fill="#2b5f9e" font-weight="600">Notion: Sources</text>
+<rect class="box" x="538" y="196" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="547" y="211" font-size="10" fill="#8a5a00" opacity=".65">7</text>
+<text x="644.0" y="231.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Load config</text>
+<rect class="box" x="794" y="196" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="803" y="211" font-size="10" fill="#8a5a00" opacity=".65">8</text>
+<text x="900.0" y="231.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Build fetch plan</text>
+<rect class="box" x="26" y="300" width="212" height="62" rx="9" fill="#eaecf0" stroke="#596070" stroke-width="1.7"/>
+<text x="35" y="315" font-size="10" fill="#596070" opacity=".65">9</text>
+<text x="132.0" y="335.0" text-anchor="middle" font-size="13.5" fill="#596070" font-weight="600">Lane</text>
+<rect class="box" x="282" y="300" width="212" height="62" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
+<text x="291" y="315" font-size="10" fill="#2b5f9e" opacity=".65">10</text>
+<text x="388.0" y="335.0" text-anchor="middle" font-size="13.5" fill="#2b5f9e" font-weight="600">Fetch feed (xml)</text>
+<rect class="box" x="538" y="300" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="547" y="315" font-size="10" fill="#8a5a00" opacity=".65">11</text>
+<text x="644.0" y="335.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Check feed</text>
+<rect class="box" x="794" y="300" width="212" height="62" rx="9" fill="#eaecf0" stroke="#596070" stroke-width="1.7"/>
+<text x="803" y="315" font-size="10" fill="#596070" opacity=".65">12</text>
+<text x="900.0" y="335.0" text-anchor="middle" font-size="13.5" fill="#596070" font-weight="600">Looks like a feed?</text>
+<rect class="box" x="26" y="404" width="212" height="62" rx="9" fill="#eaecf0" stroke="#596070" stroke-width="1.7"/>
+<text x="35" y="419" font-size="10" fill="#596070" opacity=".65">13</text>
+<text x="132.0" y="439.0" text-anchor="middle" font-size="13.5" fill="#596070" font-weight="600">Parse XML</text>
+<rect class="box" x="282" y="404" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="291" y="419" font-size="10" fill="#8a5a00" opacity=".65">14</text>
+<text x="388.0" y="439.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Attach source (xml)</text>
+<rect class="box" x="538" y="404" width="212" height="62" rx="9" fill="#eaecf0" stroke="#596070" stroke-width="1.7"/>
+<text x="547" y="419" font-size="10" fill="#596070" opacity=".65">15</text>
+<text x="644.0" y="439.0" text-anchor="middle" font-size="13.5" fill="#596070" font-weight="600">Feeds</text>
+<rect class="box" x="794" y="404" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="803" y="419" font-size="10" fill="#8a5a00" opacity=".65">16</text>
+<text x="900.0" y="439.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Normalize items</text>
+<rect class="box" x="26" y="508" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="35" y="523" font-size="10" fill="#8a5a00" opacity=".65">17</text>
+<text x="132.0" y="543.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Stage 1 filter</text>
+<rect class="box" x="282" y="508" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="291" y="523" font-size="10" fill="#8a5a00" opacity=".65">18</text>
+<text x="388.0" y="543.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Build judge input</text>
+<rect class="box" x="538" y="508" width="212" height="62" rx="9" fill="#eee2f8" stroke="#6b3fa0" stroke-width="1.7"/>
+<text x="547" y="523" font-size="10" fill="#6b3fa0" opacity=".65">19</text>
+<text x="644.0" y="543.0" text-anchor="middle" font-size="13.5" fill="#6b3fa0" font-weight="600">Judge relevance</text>
+<rect class="box" x="794" y="508" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="803" y="523" font-size="10" fill="#8a5a00" opacity=".65">20</text>
+<text x="900.0" y="543.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Parse judge</text>
+<rect class="box" x="26" y="612" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="35" y="627" font-size="10" fill="#8a5a00" opacity=".65">21</text>
+<text x="132.0" y="647.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Build writer input</text>
+<rect class="box" x="282" y="612" width="212" height="62" rx="9" fill="#eee2f8" stroke="#6b3fa0" stroke-width="1.7"/>
+<text x="291" y="627" font-size="10" fill="#6b3fa0" opacity=".65">22</text>
+<text x="388.0" y="647.0" text-anchor="middle" font-size="13.5" fill="#6b3fa0" font-weight="600">Write digest</text>
+<rect class="box" x="538" y="612" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="547" y="627" font-size="10" fill="#8a5a00" opacity=".65">23</text>
+<text x="644.0" y="647.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Compose digest</text>
+<rect class="box" x="794" y="612" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="803" y="627" font-size="10" fill="#8a5a00" opacity=".65">24</text>
+<text x="900.0" y="647.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Build Notion rows</text>
+<rect class="box" x="26" y="716" width="212" height="62" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
+<text x="35" y="731" font-size="10" fill="#2b5f9e" opacity=".65">25</text>
+<text x="132.0" y="751.0" text-anchor="middle" font-size="13.5" fill="#2b5f9e" font-weight="600">Notion: brief page</text>
+<rect class="box" x="282" y="716" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="291" y="731" font-size="10" fill="#8a5a00" opacity=".65">26</text>
+<text x="388.0" y="751.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Split feed rows</text>
+<rect class="box" x="538" y="716" width="212" height="62" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
+<text x="547" y="731" font-size="10" fill="#2b5f9e" opacity=".65">27</text>
+<text x="644.0" y="751.0" text-anchor="middle" font-size="13.5" fill="#2b5f9e" font-weight="600">Notion: feed row</text>
+<rect class="box" x="794" y="716" width="212" height="62" rx="9" fill="#d9f1fa" stroke="#1d7fa8" stroke-width="1.7"/>
+<text x="803" y="731" font-size="10" fill="#1d7fa8" opacity=".65">28</text>
+<text x="900.0" y="751.0" text-anchor="middle" font-size="13.5" fill="#1d7fa8" font-weight="600">Send brief</text>
+<rect class="box" x="26" y="820" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="35" y="835" font-size="10" fill="#8a5a00" opacity=".65">29</text>
+<text x="132.0" y="855.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Commit seen</text>
+<rect class="box" x="282" y="820" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="291" y="835" font-size="10" fill="#8a5a00" opacity=".65">30</text>
+<text x="388.0" y="855.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Build run row</text>
+<rect class="box" x="538" y="820" width="212" height="62" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
+<text x="547" y="835" font-size="10" fill="#2b5f9e" opacity=".65">31</text>
+<text x="644.0" y="855.0" text-anchor="middle" font-size="13.5" fill="#2b5f9e" font-weight="600">Notion: run row</text>
+<rect class="box" x="794" y="820" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="803" y="835" font-size="10" fill="#8a5a00" opacity=".65">32</text>
+<text x="900.0" y="855.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Source health</text>
+<rect class="box" x="26" y="924" width="212" height="62" rx="9" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.7"/>
+<text x="35" y="939" font-size="10" fill="#8a5a00" opacity=".65">33</text>
+<text x="132.0" y="959.0" text-anchor="middle" font-size="13.5" fill="#8a5a00" font-weight="600">Split source updates</text>
+<rect class="box" x="282" y="924" width="212" height="62" rx="9" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.7"/>
+<text x="291" y="939" font-size="10" fill="#2b5f9e" opacity=".65">34</text>
+<text x="388.0" y="959.0" text-anchor="middle" font-size="13.5" fill="#2b5f9e" font-weight="600">Notion: update source</text>
+<rect x="26" y="1034" width="11" height="11" rx="3" fill="#dcf2e6" stroke="#2f6f4f" stroke-width="1.4"/>
+<text class="s" x="43" y="1043.5" font-size="11.5" fill="#6b7280">trigger</text>
+<rect x="96.9" y="1034" width="11" height="11" rx="3" fill="#dbe9fb" stroke="#2b5f9e" stroke-width="1.4"/>
+<text class="s" x="113.9" y="1043.5" font-size="11.5" fill="#6b7280">Notion / fetch</text>
+<rect x="214.7" y="1034" width="11" height="11" rx="3" fill="#ffeccc" stroke="#8a5a00" stroke-width="1.4"/>
+<text class="s" x="231.7" y="1043.5" font-size="11.5" fill="#6b7280">code</text>
+<rect x="265.5" y="1034" width="11" height="11" rx="3" fill="#eee2f8" stroke="#6b3fa0" stroke-width="1.4"/>
+<text class="s" x="282.5" y="1043.5" font-size="11.5" fill="#6b7280">model</text>
+<rect x="323.0" y="1034" width="11" height="11" rx="3" fill="#d9f1fa" stroke="#1d7fa8" stroke-width="1.4"/>
+<text class="s" x="340.0" y="1043.5" font-size="11.5" fill="#6b7280">delivery</text>
+<rect x="400.6" y="1034" width="11" height="11" rx="3" fill="#eaecf0" stroke="#596070" stroke-width="1.4"/>
+<text class="s" x="417.6" y="1043.5" font-size="11.5" fill="#6b7280">control</text>
 </svg>

@@ -111,11 +111,11 @@ def order_from(wf: dict, start: str, stop_at: set[str]) -> list[str]:
 
 
 # ---------------------------------------------------------------- wrapped, readable
-def render_flow(wf: dict, names: list[str], title: str, subtitle: str, per_row: int = 5) -> str:
+def render_flow(wf: dict, names: list[str], title: str, subtitle: str, per_row: int = 4) -> str:
     """Lay the chain out in rows instead of one endless line. A README image has to be about as wide
     as a page, not nine times wider, or every label shrinks into a smudge."""
     nodes = {n["name"]: n for n in wf["nodes"]}
-    BW, BH, GX, GY, M = 196, 58, 46, 40, 24
+    BW, BH, GX, GY, M = 212, 62, 44, 42, 26
     rows = [names[i:i + per_row] for i in range(0, len(names), per_row)]
     w = M * 2 + per_row * BW + (per_row - 1) * GX
     h = 92 + len(rows) * (BH + GY) + 30
@@ -153,13 +153,70 @@ def render_flow(wf: dict, names: list[str], title: str, subtitle: str, per_row: 
         p.append(f'<rect class="box" x="{x}" y="{y}" width="{BW}" height="{BH}" rx="9" fill="{fill}" '
                  f'stroke="{stroke}" stroke-width="1.7"/>')
         p.append(f'<text x="{x + 9}" y="{y + 15}" font-size="10" fill="{stroke}" opacity=".65">{i}</text>')
-        lines = wrap(name, 24)
+        lines = wrap(name, 25)
         top = y + BH / 2 - (len(lines) - 1) * 7.5 + 4
         for j, line in enumerate(lines):
-            p.append(f'<text x="{x + BW / 2}" y="{top + j * 15}" text-anchor="middle" font-size="12.5" '
+            p.append(f'<text x="{x + BW / 2}" y="{top + j * 15}" text-anchor="middle" font-size="13.5" '
                      f'fill="{stroke}" font-weight="600">{esc(line)}</text>')
 
     legend(p, M, h - 24)
+    p.append("</svg>")
+    return "\n".join(p)
+
+
+def render_branches(wf: dict, groups: list[tuple[str, list[str]]], title: str, subtitle: str,
+                    per_row: int = 4) -> str:
+    """Several short chains stacked, each with its own heading. Keeps them comparable and keeps every
+    label the same size as the main diagram."""
+    nodes = {n["name"]: n for n in wf["nodes"]}
+    BW, BH, GX, GY, M = 212, 62, 44, 42, 26
+    w = M * 2 + per_row * BW + (per_row - 1) * GX
+
+    blocks, y = [], 92
+    for heading, names in groups:
+        rows = [names[i:i + per_row] for i in range(0, len(names), per_row)]
+        blocks.append((heading, names, rows, y))
+        y += 34 + len(rows) * (BH + GY)
+    h = y + 26
+
+    p = [f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" '
+         f'font-family="{FONT}">', STYLE,
+         '<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" '
+         'markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#9aa4b2"/></marker></defs>',
+         f'<rect class="bg" width="{w}" height="{h}" fill="#ffffff"/>',
+         f'<text class="t" x="{M}" y="34" font-size="20" font-weight="600" fill="#111827">{esc(title)}</text>',
+         f'<text class="s" x="{M}" y="56" font-size="13" fill="#6b7280">{esc(subtitle)}</text>']
+
+    for heading, names, rows, top in blocks:
+        p.append(f'<text class="t" x="{M}" y="{top + 16}" font-size="14" font-weight="600" '
+                 f'fill="#111827">{esc(heading)}</text>')
+        pos = {}
+        for r, row in enumerate(rows):
+            for c, name in enumerate(row):
+                pos[name] = (M + c * (BW + GX), top + 34 + r * (BH + GY))
+        for i, name in enumerate(names[:-1]):
+            x1, y1 = pos[name]
+            x2, y2 = pos[names[i + 1]]
+            if y1 == y2:
+                p.append(f'<path d="M{x1 + BW},{y1 + BH / 2} L{x2 - 8},{y2 + BH / 2}" fill="none" '
+                         f'stroke="#9aa4b2" stroke-width="1.8" marker-end="url(#a)"/>')
+            else:
+                p.append(f'<path d="M{x1 + BW / 2},{y1 + BH} L{x1 + BW / 2},{y1 + BH + GY / 2} '
+                         f'L{x2 + BW / 2},{y1 + BH + GY / 2} L{x2 + BW / 2},{y2 - 8}" fill="none" '
+                         f'stroke="#9aa4b2" stroke-width="1.8" stroke-dasharray="5 4" marker-end="url(#a)"/>')
+        for i, name in enumerate(names, 1):
+            stroke, fill = COLOURS[kind(nodes[name])]
+            x, y = pos[name]
+            p.append(f'<rect class="box" x="{x}" y="{y}" width="{BW}" height="{BH}" rx="9" '
+                     f'fill="{fill}" stroke="{stroke}" stroke-width="1.7"/>')
+            p.append(f'<text x="{x + 9}" y="{y + 15}" font-size="10" fill="{stroke}" opacity=".65">{i}</text>')
+            lines = wrap(name, 25)
+            ty = y + BH / 2 - (len(lines) - 1) * 7.5 + 4
+            for j, line in enumerate(lines):
+                p.append(f'<text x="{x + BW / 2}" y="{ty + j * 15}" text-anchor="middle" '
+                         f'font-size="13.5" fill="{stroke}" font-weight="600">{esc(line)}</text>')
+
+    legend(p, M, h - 22)
     p.append("</svg>")
     return "\n".join(p)
 
@@ -228,17 +285,25 @@ def main():
                     "Feeds; the weekly review hangs off the same gate."),
         encoding="utf-8")
 
-    (OUT / "workflow-full.svg").write_text(
-        render_canvas(wf, "All of it",
-                      f"{total} nodes as n8n lays them out. Daily brief, link redirector, "
-                      f"source discovery, weekly review."),
+    # The other three branches, stacked. Each is short, so they fit in one picture together.
+    branches = [
+        ("Source discovery", order_from(wf, "Every 15 min", set())),
+        ("Weekly review", order_from(wf, "Review day?", set())),
+        ("A link in the brief was tapped", order_from(wf, "Link click", set())),
+    ]
+    (OUT / "workflow-branches.svg").write_text(
+        render_branches(wf, branches, "The other three branches",
+                        "Same gate, same tables, different triggers."),
         encoding="utf-8")
 
-    old = OUT / "workflow.svg"
-    if old.exists():
-        old.unlink()
+    # No canvas-faithful picture any more. At 6710 pixels wide it is unreadable in a README at any
+    # zoom, and a diagram nobody can read is worse than no diagram.
+    for stale in ("workflow.svg", "workflow-full.svg"):
+        f = OUT / stale
+        if f.exists():
+            f.unlink()
 
-    for f in ("workflow-daily.svg", "workflow-full.svg"):
+    for f in ("workflow-daily.svg", "workflow-branches.svg"):
         kb = (OUT / f).stat().st_size // 1024
         print(f"docs/images/{f}  {kb} KB")
 
