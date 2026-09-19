@@ -25,7 +25,7 @@ workflows that `deploy.py` created. Neither is ever written into `workflow.json`
 ## The Notion integration
 
 Three capabilities are needed: **Read content**, **Update content**, **Insert content**. Comment and
-user capabilities are not used — leave them off.
+user capabilities are not used, so leave them off.
 
 Then **connect the integration to the page**. Open the page the databases live under, `···` →
 Connections → pick your integration, and confirm. Access is inherited by everything nested inside it.
@@ -35,7 +35,7 @@ Connections → pick your integration, and confirm. Access is inherited by every
 
 ### Two different ids
 
-A Notion database has a **database id** — 32 hex characters, visible in the page URL — and an internal
+A Notion database has a **database id** — 32 hex characters, visible in the page URL, and an internal
 **data-source id**, which some tools show as `collection://<uuid>`. The REST API this workflow uses
 (`/v1/databases/<id>/query`, version `2022-06-28`) accepts only the first. The second returns
 `404 object_not_found` and is indistinguishable from a permissions problem.
@@ -44,7 +44,7 @@ A Notion database has a **database id** — 32 hex characters, visible in the pa
 
 If you ever rename a select option through the API, keep the option's `id` and change only its `name`.
 Send the list with the ids stripped and Notion creates brand-new options instead of renaming the old
-ones — every page that pointed at them is silently left empty. Renaming in the Notion UI is safe.
+ones, every page that pointed at them is silently left empty. Renaming in the Notion UI is safe.
 
 ## Deploy
 
@@ -69,8 +69,8 @@ Claude instead of Gemini (rebuild first with the same flag).
 ## Importing by hand
 
 If you would rather not run the script: import `error-workflow.json`, then `workflow.json`, from the
-n8n UI. Then find and replace each `__PLACEHOLDER__` in the imported nodes — the database ids, the
-Telegram chat id, the error workflow id — and attach the credentials to the nodes that want them. The
+n8n UI. Then find and replace each `__PLACEHOLDER__` in the imported nodes, the database ids, the
+Telegram chat id, the error workflow id, and attach the credentials to the nodes that want them. The
 build script prints the full list of placeholders.
 
 ## Connecting your own source
@@ -79,12 +79,12 @@ build script prints the full list of placeholders.
 2. If the type is new, one entry in `SOURCES` in `src/nodes/build_fetch_plan.js` and one option in the
    `Type` column, then `python scripts/build_workflow.py && python scripts/deploy.py`.
 
-A source linked to no topic is never fetched — this is deliberate, not a bug.
+A source linked to no topic is never fetched. That is deliberate, not a bug.
 
 ## Connecting a different messenger
 
 `DELIVERY` in the same file. Telegram is the reference implementation. WhatsApp needs a Meta Business
-account and an approved template, and the button limits are strict — `LIMITATIONS.md` has the details
+account and an approved template, and the button limits are strict. `LIMITATIONS.md` has the details
 and they are worth reading before promising anyone a date.
 
 ## When something does not work
@@ -93,8 +93,8 @@ and they are worth reading before promising anyone a date.
 |---|---|
 | Every Notion call 404s | integration not connected to the page, or a data-source id instead of a database id |
 | `The requested webhook is not registered` | the workflow is not active, or the path is in `options.path` instead of `parameters.path` |
-| Activation fails with `Bad request` | a trigger cannot register — most often the Telegram Trigger against a private address. Disable it and activate again |
-| Brief arrives, the "read the original" line is plain text | `n8n address` is not public; Telegram will not linkify a private address. This is handled — links point straight at the article instead |
+| Activation fails with `Bad request` | a trigger cannot register, most often the Telegram Trigger against a private address. Disable it and activate again |
+| Brief arrives, the "read the original" line is plain text | `n8n address` is not public; Telegram will not linkify a private address. This is handled. links point straight at the article instead |
 | The same articles arrive every day | the seen-index is not being written. Check `staticData` on the workflow; a redeploy that dropped it is the usual cause |
 | A topic produces nothing | no live sources, an empty `Criterion`, or a threshold nothing reaches. `python scripts/run_tests.py --case config` names all three |
 | Brief is empty but sources are fine | look at the score distribution in `Feed`. If everything clusters just below the bar, the threshold is too high for that topic |

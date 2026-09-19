@@ -5,7 +5,7 @@ Written before anyone asks, because software that only lists its strengths is an
 ## By design
 
 **One person.** There is no notion of users. Two people wanting two briefs means two deployments. Adding
-multi-tenancy is not a flag — it touches the seen-index, the settings table and the delivery layer.
+multi-tenancy is not a flag, it touches the seen-index, the settings table and the delivery layer.
 
 **No paywalls.** Feeds behind a paywall give a headline and a two-line excerpt, and that is all the
 model sees. The judgement is honest about that; the article may still be worth more or less than it
@@ -20,7 +20,7 @@ being sent in January is sent again. The window is a setting; making it a year w
 mean a slowly growing blob in n8n's static data.
 
 **No ranking beyond the score.** Items are grouped by topic and sorted by score. There is no
-personalisation model, no decay, no learning weights — the only thing that changes behaviour over time
+personalisation model, no decay, no learning weights, the only thing that changes behaviour over time
 is you editing the table, which is the point.
 
 ## Operational
@@ -51,7 +51,7 @@ Telegram is the reference channel because it has none of the following. Checked 
 documentation (*Template components*, updated 24 Jun 2026):
 
 - A template message is the **only** kind that may be sent outside a 24-hour customer-service window, so
-  a daily brief must be a template — which must be approved before first use.
+  a daily brief must be a template, which must be approved before first use.
 - Templates can carry buttons: up to ten `QUICK_REPLY`, label max 25 characters.
 - **More than three buttons and only two are shown**, the rest hide behind "See all options".
 - **Four or more buttons, or a quick reply mixed with any other button type, will not open on WhatsApp
@@ -76,7 +76,7 @@ requests (`If-Modified-Since`) would fix it and are not implemented.
 
 **A model occasionally answers off-schema.** Both model calls retry once and then continue without
 that chunk rather than ending the run. Articles from a failed chunk are counted as `no_verdict` in the
-run row and are not marked as seen, so they get another chance the next morning — but they are missing
+run row and are not marked as seen, so they get another chance the next morning, but they are missing
 from that day's brief.
 
 **Telegram will not link a private address.** If `n8n address` is not public, the workflow drops the

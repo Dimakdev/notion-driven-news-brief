@@ -7,7 +7,7 @@ why each piece is shaped the way it is.
 
 **The prompt knows nothing. The database knows everything.**
 
-The model makes exactly two narrow judgements — *propose sources for a topic* and *score an article
+The model makes exactly two narrow judgements. *propose sources for a topic* and *score an article
 against a topic's criterion*. Fetching, de-duplicating, health, delivery, memory and logging are the
 engine's work. Nothing about the user's interests is compiled into the graph.
 
@@ -24,7 +24,7 @@ engine's work. Nothing about the user's interests is compiled into the graph.
 
 An hourly schedule instead of a cron at 05:00 is deliberate: the time of day is part of what the user
 controls, and a cron expression inside a node is not editable from Notion. The gate reads only the
-`Settings` table — one small query per hour — and the heavier tables are read only when it opens.
+`Settings` table, one small query per hour, and the heavier tables are read only when it opens.
 The gate also holds the once-a-day guard, so a restart or a clock change cannot produce two briefs.
 
 ## The daily chain
@@ -99,12 +99,12 @@ The keyword step is the only one that can cause a false negative, so it has an e
 with an **empty** `Signals` list skips it entirely and sends everything in the window to the model.
 
 **Stage two is a model and costs money.** One call per chunk of eight articles, with every topic's
-criterion inside it — not one call per article-and-topic pair, which would multiply the bill by the
-number of topics and let the same article arrive twice under two headings.
+criterion inside it, rather than one call per article-and-topic pair. That would multiply the bill by
+the number of topics and let the same article arrive twice under two headings.
 
 **The threshold decides what ships; nothing decides how many.** There is no cap in the code. The only
-limit is `Budget ceiling`, which caps how many candidates reach the model — a guard on cost, not on
-output — and when it bites the brief says so in its own footer.
+limit is `Budget ceiling`, which caps how many candidates reach the model, a guard on cost, not on
+output, and when it bites the brief says so in its own footer.
 
 ## Memory, in three places
 
@@ -129,7 +129,7 @@ static data across an update for the same reason.
 - **Error workflow** sends one alert naming the node, the message and the execution id, and states
   plainly that the index was not advanced.
 
-## Races and replacements — two n8n facts worth knowing
+## Two n8n facts worth knowing
 
 **Two branches into one node does not make n8n wait for both.** The node fires on the first arrival.
 `Load config` reads three tables through `$('...')`, so the table nodes are chained one after another
@@ -137,7 +137,7 @@ rather than fanned out. One extra round trip buys determinism.
 
 **Several node types replace the item they are given.** HTTP Request replaces it with the response,
 the XML node with what it parsed, the Telegram node with the API's answer. Anything that must survive
-has to be re-read from the node that produced it — `$('Build fetch plan').item` in a per-item Code
+has to be re-read from the node that produced it. `$('Build fetch plan').item` in a per-item Code
 node, or `$('Build Notion rows').first()` after the send. Three separate bugs in this build had this
 one cause, and the worst of them was silent: the seen-index never filled, so the brief would have
 repeated itself every morning while looking perfectly healthy.
@@ -154,7 +154,7 @@ repeated itself every morning while looking perfectly healthy.
 | 36 | Probe candidate | **fetches every one**, as text, never throwing |
 | 37 | Validate sources | parses? enough entries? published in the past fortnight? not a duplicate? |
 | 38 | Build source rows → Notion: new source | survivors land as `Proposed`, with measured numbers |
-| 39 | Split topics to clear → Notion: clear checkbox | untick the request, found or not — otherwise it repeats every fifteen minutes |
+| 39 | Split topics to clear → Notion: clear checkbox | untick the request, found or not, otherwise it repeats every fifteen minutes |
 | 40 | Report discovery | what passed, with numbers, and what was rejected, with reasons |
 
 The probe deliberately does not go through the XML node: one invented address throwing would take the
@@ -167,7 +167,7 @@ the past week from `Feed`, reports how much was opened, lists what was not, and 
 `Review now` flag afterwards so asking for it early is a one-shot.
 
 It carries **no buttons**. The Telegram node fixes its keyboard at build time, so a list that varies
-week to week cannot be a row of buttons without contortions — and a callback needs a public address,
+week to week cannot be a row of buttons without contortions, and a callback needs a public address,
 which a local install does not have. Verdicts are set in `Feed` instead, which is where the rest of
 the control panel already lives.
 
@@ -181,5 +181,5 @@ graph does not change.
 | `rss`, `atom`, `youtube`, `reddit`, `hn`, `json`, `web_search` | `telegram` (reference), `whatsapp`, `email` |
 
 The storage layer is an adapter in principle too: the code talks to Notion through a narrow set of
-operations — read topics, read sources, read settings, write a row, change a status. Google Sheets,
+operations: read topics, read sources, read settings, write a row, change a status. Google Sheets,
 Airtable or a YAML file would each be a contained piece of work. Only Notion is built.

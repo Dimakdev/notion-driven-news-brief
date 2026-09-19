@@ -1,10 +1,10 @@
-# Design document
+# Design notes
 
-Written before the build and translated here. The last section is what changed once it
-met reality — kept separate on purpose, because a design document that was right about everything was
-either trivial or rewritten afterwards.
+What I wrote down before building this, translated. The last section is what changed once it actually
+ran. I kept those separate on purpose: a design document that turned out to be right about everything
+was either trivial or quietly rewritten afterwards.
 
-## What the case proves
+## What it should prove
 
 That a person controls their own information flow by editing a table rather than a prompt. Adding
 "cooking" is a row. Removing what has become tiresome is a row. The system finds where to read it,
@@ -14,20 +14,19 @@ And that the filter learns: what you open changes what you are shown.
 
 What it does **not** claim: a news aggregator as a service, ML ranking, multi-tenancy, paywall access.
 
-### Already proven in production
+### It already works, in the worst version
 
-The predecessor, `JUN Brief`, has run every morning since 25 April 2026 without a gap. Five months of
-unbroken runs, a real history of breakage, and real numbers on every one. This case moves its logic
-out of the prompt and into a database — so the README can honestly say it is a rewritten working tool,
-not a prototype.
+The thing this replaces, `JUN Brief`, has run every morning since 25 April 2026 without missing a day.
+Five months of runs, a real history of things breaking, real numbers each time. This moves its logic
+out of the prompt and into a database. It is a rewrite of something that works, not a prototype.
 
 ## The central decision
 
 **The prompt knows nothing. The database knows everything.**
 
-In the predecessor, sources, topics, stop-words and rules all lived as prose in one prompt. Changing
-anything meant editing an instruction file. Here six Notion tables are the control panel, and the
-model makes two narrow judgements.
+In the old one, sources, topics, stop-words and rules all lived as prose in a single prompt. Changing
+anything meant editing an instruction file. Here six Notion tables are the control panel and the model
+makes two narrow judgements.
 
 ### Carried over verbatim
 
@@ -45,7 +44,7 @@ These rules survived five months and were not rewritten:
 
 ## Memory, on three levels
 
-The naive version — writing everything considered into Notion — does not survive. Six sources at
+The naive version, writing everything considered into Notion, does not survive. Six sources at
 ~30 entries each is ~180 a day: 5400 rows a month, 65000 a year, and 180 API writes every morning
 against a limit of roughly three a second. The table is unusable within a quarter.
 
@@ -56,7 +55,7 @@ counters. Precision, dead keywords and source productivity are all computable fr
 ## Feedback without buttons at delivery
 
 A button under an item asks for a verdict *before* the article has been read, and asks for it at the
-worst possible moment — just as the reader is about to leave. It rates the summary, not the piece.
+worst possible moment, just as the reader is about to leave. It rates the summary, not the piece.
 
 A single button under the whole brief is worse: if five items were noise and the sixth was excellent,
 "miss" is a lie.
@@ -71,14 +70,14 @@ Asking a model for feed addresses and fetching them directly is the fastest rout
 URLs. So discovery is split: the model **proposes**, deterministic code **fetches and verifies** every
 candidate (does it parse, how many entries, how fresh, is it a duplicate), and the person **approves**.
 
-This is also the most sellable pattern in the case: AI proposes → code verifies → human approves.
+It is also the pattern worth keeping in general: the model proposes, code verifies, a person approves.
 
 ## What changed once it ran
 
 The design was right about the shape and wrong about several details. Each of these came from a live
 run, not from review.
 
-**The brief page needed its own table.** The design had five tables; the digest had nowhere to live
+**The brief page needed its own table.** The design had five tables and the digest had nowhere to live
 with a stable address. `Briefs` is the sixth.
 
 **The model calls split in two.** The design had one. Judging is cheap and happens to ~40 articles;
@@ -94,7 +93,7 @@ Notion, which would have made the time of day the one setting that was not data.
 only the settings table each hour and opens when it should.
 
 **`Respond to Webhook` is fine here.** The design forbade it, generalising a constraint from the
-previous case that was specific to the Form Trigger. There is no Form Trigger in this workflow, and
+previous project that was specific to the Form Trigger. There is no Form Trigger in this workflow, and
 the 302 redirect needs that node.
 
 **Link wrapping degrades instead of insisting.** When the configured address is not public, links go
@@ -103,7 +102,7 @@ the wrapper meant a digest whose links could not be tapped.
 
 **Several nodes replace the item they are given.** HTTP Request, the XML node and the Telegram node
 all do it. Three bugs in this build had that single cause, and the worst was silent: `Commit seen` read
-its own input — which by then was Telegram's API response — so the seen-index never filled. The brief
+its own input, which by then was Telegram's API response, so the seen-index never filled. The brief
 would have looked healthy and repeated the same articles every morning.
 
 **One dead feed must not end the morning.** VentureBeat's AI feed had stopped being a feed and started

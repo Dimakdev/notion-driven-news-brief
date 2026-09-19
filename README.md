@@ -1,113 +1,113 @@
 # Notion-driven news brief
 
-A morning digest that reads what *you* said you care about, not what a prompt was written to care
-about. Six tables in Notion decide everything: what to look for, where to read it, how strict to be,
-and what has already been sent. An n8n workflow does the rest — fetching, de-duplicating, scoring,
-delivering, and keeping an honest record of what it threw away.
+I get a short digest every morning of things I actually want to read. What it looks for, where it
+reads, and how picky it is all live in six Notion tables. An n8n workflow does the rest.
 
-It is the rebuilt version of a routine I have been running every morning since April 2026. The original kept
-its topics, its sources and its rules as prose inside one prompt, which meant changing your mind meant
-editing an instruction file. Here, changing your mind is editing a row.
+I have been running some version of this since April 2026. The first one kept everything in a single
+prompt: the topics, the sources, the rules. It worked, but changing my mind meant editing an
+instruction file, and I was not going to hand that to anyone. So I moved all of it into a database.
+Now changing my mind is editing a row.
 
 ```
-                    ┌──────────── Notion ────────────┐
-   every hour ──────▶  Settings  Topics  Sources   │
-                    └───────────────┬────────────────┘
-                                    ▼
-   fetch 11 sources ──▶ stage 1: window · already seen · duplicates · muted · keywords
-                                    ▼  (≈2300 → ≈10)
-                        stage 2: a model scores each one against YOUR criterion
-                                    ▼  (everything above your threshold — no cap)
-                        write it up ──▶ Telegram ──▶ archive ──▶ remember ──▶ run row
+                    +------------ Notion ------------+
+   every hour ------>  Settings   Topics   Sources    |
+                    +---------------+----------------+
+                                    v
+   fetch the sources --> stage 1: window, already seen, duplicates, muted, keywords
+                                    v
+                        stage 2: a model scores each one against your criterion
+                                    v
+                        write it up --> Telegram --> archive --> remember --> log the run
 ```
 
-## What a morning looks like
+## How a morning goes
 
-1. The workflow wakes up, reads `Settings`, and stops again unless this is the hour you asked
-   for. The time of day is data, not a cron expression buried in a node.
-2. It reads your active topics and their live sources, and fetches each source through its adapter —
-   RSS, Atom, a YouTube channel, a subreddit, Hacker News, or any JSON endpoint.
-3. **Stage one, free.** Everything outside your time window, everything already sent, the same story
-   arriving from three sources, anything carrying a muted word, and anything matching none of your
-   keywords is dropped. On a real morning here: 2281 fetched, 10 survive.
-4. **Stage two, paid.** A model scores each survivor from 0 to 100 against the *criterion you wrote in
-   your own words*, and says in one phrase what matched.
-5. Everything above that topic's threshold is written up and sent. **Everything.** Fifteen articles
-   above the bar is a fifteen-item brief. One is one. None says "nothing today" and stops. There is
-   no cap anywhere in the code and nothing is padded to look busy.
-6. What shipped is archived, the run is recorded as eight numbers, and only then — after the brief has
-   actually been delivered — is the seen-index updated.
+The workflow wakes up every hour, reads the Settings table, and goes back to sleep unless it is the
+hour you asked for. The time of day is a row, not a cron expression buried in a node.
 
-You read it in the messenger. Tapping a link records the click and sends you to the article. That
-click is the feedback loop: nothing to press before you have read anything, no rating a headline you
-have not opened.
+When it is the right hour it reads your topics and their sources, and fetches each one. RSS, Atom, a
+YouTube channel, a subreddit, Hacker News, any JSON endpoint.
 
-Once a week — switchable off with one field — a short review arrives: how many arrived, how many you
-opened, and which ones you did not. Judgement after reading, not before, and marked in the database
-rather than by a button you have to find.
+Then two stages. The first is plain code and costs nothing: it drops anything outside your time
+window, anything already sent, the same story arriving from three places, anything with a muted word
+in it, and anything matching none of your keywords. On my setup that is usually a couple of thousand
+items down to about ten.
+
+The second stage costs money, so it only sees what survived. A model scores each one from 0 to 100
+against the criterion you wrote in your own words, and says in a few words what matched.
+
+Everything above your threshold gets written up and sent. All of it. If fifteen articles clear the
+bar you get fifteen. If one does, you get one. If none do it says so and stops. There is no cap in
+the code anywhere, and nothing gets padded to look busy.
+
+After that it archives what it sent, writes eight numbers about the run, and only then updates its
+memory of what has been seen.
+
+You read the thing in Telegram. Tapping a link records the click and takes you to the article. That
+click is the whole feedback loop. Nothing to press before you have read anything.
+
+Once a week you get a short review: how many arrived, how many you opened, which ones you did not.
+You can turn it off with one field.
 
 ## Why a database instead of a prompt
 
-A prompt that knows your interests is a prompt only you can edit, and only carefully. A table anyone
-can edit turns the same system into something you hand to someone else.
+A prompt full of your interests is something only you can safely edit. A table is something you can
+hand to someone else.
 
-| Table | Answers | You edit |
+| Table | What it answers | What you edit |
 |---|---|---|
-| `Topics` | what to look for | the criterion in plain language, keywords, muted words, the threshold |
-| `Sources` | where to read | addresses, types, and one checkbox that starts source discovery |
-| `Feed` | what was sent | nothing, usually — it is the archive and the click record |
-| `Runs` | how the filter did | nothing — eight numbers a day, the basis of every metric |
-| `Settings` | time, channel, ceilings, holiday | all of it |
-| `Briefs` | one page per morning | nothing — it is what "full brief" opens |
+| `Topics` | what to look for | the criterion, keywords, muted words, the threshold |
+| `Sources` | where to read | addresses, types, and a checkbox that starts source discovery |
+| `Feed` | what got sent | usually nothing. It is the archive and the click record |
+| `Runs` | how the filter did | nothing. Eight numbers a day |
+| `Settings` | time, language, channel, ceilings, holiday | all of it |
+| `Briefs` | one page per morning | nothing. It is what the "full brief" link opens |
 
-Two fields are worth understanding:
+Two fields do most of the work.
 
-- **`Criterion`** is the text the model judges against. It replaces a paragraph of prompt. Write it the
-  way you would explain the topic to a person, *including what you do not want* — the negative half
-  does most of the work.
-- **`Threshold`** is your volume knob, per topic. Noisy → raise it. Feels like it is missing things →
-  lower it. Every item's score is stored in `Feed`, so after a week you set it on evidence rather
-  than by feel.
+**Criterion** is the text the model scores against. Write it the way you would explain the topic to a
+friend, and include what you do *not* want. The negative half matters more than you would think.
 
-Leaving `Signals` empty is deliberate, not incomplete: it switches the keyword filter off for that
-topic and sends everything in the window to the model. More expensive, misses nothing.
+**Threshold** is the volume knob for that topic. Too noisy, raise it. Feels like it is missing things,
+lower it. Every score is stored in `Feed`, so after a week you can look at the spread and set it on
+evidence instead of guessing.
 
-## Source discovery: proposed, verified, approved
+Leaving `Signals` empty is not an oversight. It turns the keyword filter off for that topic and sends
+everything in the window to the model. Costs more, misses nothing.
 
-Tick `Find sources` on a topic. Within a few minutes:
+## Finding sources
 
-1. a model proposes candidate feeds;
-2. **the code fetches every one of them** — does it parse, does it hold more than a couple of entries,
-   was the last one published in the past fortnight, is it already in your list;
-3. survivors land in `Sources` as `Proposed`, with the measured numbers filled in;
-4. you set the ones you want to `Active`.
+Tick `Find sources` on a topic and wait a few minutes.
 
-A real run, for a topic about smart glasses: five proposed, five verified, and the numbers told the
-story the model could not — 9to5Mac publishes 207 items a week (a firehose), Apple Developer News
-publishes one (a trickle). Both are live and useful; they are not the same kind of source, and only
-fetching them shows that.
+A model suggests feeds. Then the code fetches every single one and checks it: does it parse, does it
+have more than a couple of entries, did it publish anything in the last two weeks, is it already in
+your list. Whatever survives shows up in `Sources` marked `Proposed`, with the numbers filled in. You
+switch on the ones you want.
 
-Models invent feeds that look plausible and return 404. Step 2 is why an invented address never
-reaches the database. The model proposes, the code checks, the person decides.
+The fetching step is there because models make up feed addresses that look completely reasonable and
+return 404. It also tells you things the model cannot: when I ran this for a topic about smart
+glasses, five candidates passed, and the numbers showed 9to5Mac publishes about 207 items a week
+while Apple Developer News publishes one. Both are fine sources. They are not the same kind of thing,
+and you only find that out by fetching them.
 
-## What is where
+## What is in here
 
 | Path | What it is |
 |---|---|
-| `workflow.json` | the workflow, 78 nodes, import-ready, no secrets inside |
-| `error-workflow.json` | the error handler: one alert per crash, naming the node and the execution |
-| `src/nodes/` | the twenty-eight Code nodes as plain JavaScript — the part worth reading |
-| `schema/notion.json` | the six databases as data, so they can be rebuilt in any workspace |
-| `scripts/deploy.py` | creates the databases and credentials, imports and activates both workflows |
+| `workflow.json` | the workflow, 79 nodes, ready to import, no secrets in it |
+| `error-workflow.json` | the error handler. One alert per crash with the node and execution id |
+| `src/nodes/` | 28 JavaScript files, one per Code node. This is the part worth reading |
+| `schema/notion.json` | the six databases as data, so they can be rebuilt anywhere |
+| `scripts/deploy.py` | makes the databases and credentials, imports and activates both workflows |
 | `scripts/seed_notion.py` | three example topics and two sources, enough to see it work |
 | `scripts/build_workflow.py` | rebuilds the JSON from `src/nodes/` after you edit a node |
-| `scripts/run_tests.py` | five integration cases against your real Notion and n8n |
+| `scripts/run_tests.py` | five checks against your real Notion and n8n |
 | `scripts/telegram_chat_id.py` | prints your chat id after you message the bot once |
-| `docs/` | architecture, setup, and the design document written before the build |
-| `LIMITATIONS.md` | what this does not do |
-| `docker-compose.yml` | a minimal n8n, if you do not have one running |
+| `docs/` | architecture, setup, and the design notes I wrote before building it |
+| `LIMITATIONS.md` | what it does not do |
+| `docker-compose.yml` | a minimal n8n if you do not have one |
 
-## Get it running
+## Setting it up
 
 ```bash
 git clone <your fork> && cd notion-driven-news-brief
@@ -115,105 +115,116 @@ cp .env.example .env
 docker compose up -d
 ```
 
-n8n comes up at <http://localhost:5678>; the first visit creates the owner account. Then
-**Settings → n8n API → create a key** → `N8N_API_KEY` in `.env`.
+n8n comes up on <http://localhost:5678>. First visit creates the account. Then Settings, n8n API,
+create a key, and put it in `N8N_API_KEY`.
 
-In Notion, create an internal integration at <https://www.notion.so/my-integrations> with **Read,
-Update and Insert content**. Put its token in `NOTION_TOKEN`. Then open the page the databases should
-live under, connect the integration to it (`···` → Connections), and copy that page's id into
+For Notion, make an internal integration at <https://www.notion.so/my-integrations> with read, update
+and insert permissions, and put the token in `NOTION_TOKEN`. Then open the page you want the databases
+to live under, connect the integration to it from the `...` menu, and copy that page id into
 `NOTION_PARENT_PAGE_ID`.
 
-> Connecting the integration to the page is the step everyone skips. Without it the token is valid and
-> every query answers `404 object_not_found`, which reads exactly like a wrong id.
+Do not skip connecting the integration to the page. If you do, the token is perfectly valid and every
+single query comes back `404 object_not_found`, which looks exactly like you typed the wrong id. I
+lost an hour to that.
 
-Add a Gemini key from <https://aistudio.google.com/apikey>, a bot token from @BotFather, then:
+Add a Gemini key from <https://aistudio.google.com/apikey> and a bot token from @BotFather, then:
 
 ```bash
 python scripts/deploy.py --create-databases
-```
-
-It prints the `NOTION_DB_*` lines to paste into `.env` — it does not write that file itself, because a
-script that edits the file holding your keys is a script you have to read very carefully. Then:
-
-```bash
 python scripts/seed_notion.py
 ```
 
-Message your bot once and run `python scripts/telegram_chat_id.py` for `TELEGRAM_CHAT_ID`, put it in
-`.env`, and run `deploy.py` again to wire it in.
+`deploy.py` prints the `NOTION_DB_*` lines for you to paste into `.env`. It does not write that file
+itself on purpose. A script that edits the file holding all your keys is a script you should have to
+read carefully first.
 
-### Try it without waiting
+Message your bot once, run `python scripts/telegram_chat_id.py` for the chat id, put that in `.env`
+too, and run `deploy.py` again.
+
+### Trying it without waiting until tomorrow
 
 ```bash
-curl -X POST http://localhost:5678/webhook/run-now       # the brief, now
-curl -X POST http://localhost:5678/webhook/find-sources  # source discovery, now
+curl -X POST http://localhost:5678/webhook/run-now
+curl -X POST http://localhost:5678/webhook/find-sources
 ```
 
-Same chains, schedule skipped. Both stayed in after testing, because "give me the brief now" and
-"find me sources for this topic now" are reasonable things to want.
+Both of these started life as test hooks and stayed, because "give me the brief now" turns out to be
+something I want.
 
-### Check that it works
+### Checking it works
 
 ```bash
 python scripts/run_tests.py
 ```
 
-Five cases against the real thing: the control panel parses, every live source answers and is still
-publishing, a full run completes and the funnel is printed, the seen-index is actually growing, and the
-link redirector resolves a real hash while sending a bogus one somewhere harmless.
+It reads your control panel, fetches every live source for real, runs the whole chain and prints the
+funnel, checks the memory is actually filling up, and makes sure the link redirector sends a real hash
+to its article and a made-up one somewhere harmless.
 
-### One thing about links
+### About the links
 
-Every link in the brief goes through your own n8n so the click can be recorded. On plain `localhost`
-that cannot work — and Telegram will not even render a `localhost` href as a link, so the reader gets
-plain text and no way to open anything.
+Links in the brief go through your own n8n so the click can be counted. On plain localhost that cannot
+work, and Telegram will not even turn a localhost address into a link, so you get the words with
+nothing behind them.
 
-The workflow handles this rather than pretending: when `n8n address` in `Settings` is not a public
-address, links point straight at the article and the run row notes that tracking is off. Put n8n behind
-a public URL, change that one row, and the wrapper switches itself on. No redeploy.
+The workflow checks for this instead of pretending. If the `n8n address` setting is not public, links
+point straight at the article and the run log notes that tracking is off. Put n8n somewhere reachable,
+change that one row, and the wrapper comes back on. No redeploy.
 
-Telegram's callback buttons need the same public address — n8n cannot even activate a Telegram Trigger
-against `localhost`, because Telegram refuses to register the webhook. Until then that node stays
-disabled and the brief works without it.
+Telegram's buttons need the same thing. n8n cannot even activate a Telegram Trigger against localhost
+because Telegram refuses to register the webhook, so that node ships disabled and everything else
+works without it.
 
-## Make it yours
+## Changing things
 
-- **A new kind of source** — one entry in `SOURCES` in `src/nodes/build_fetch_plan.js`, one option in
-  the `Type` column. The rest of the graph does not change.
-- **A different messenger** — one entry in `DELIVERY` in the same file. Telegram is the reference;
-  what WhatsApp requires is in `LIMITATIONS.md`, and it is more than it looks.
-- **A different model** — `python scripts/build_workflow.py --provider anthropic`, then redeploy.
-- **Different thresholds, windows, muted words, the time of day, a holiday** — none of that is in the
-  code. It is in Notion.
+A new kind of source is one entry in `SOURCES` in `src/nodes/build_fetch_plan.js` plus one option in
+the `Type` column. Nothing else in the graph changes.
 
-## What broke while building this
+A different messenger is one entry in `DELIVERY` in the same file. Telegram is the one that is built.
+What WhatsApp needs is in `LIMITATIONS.md` and it is worse than it sounds.
 
-Every one of these was found by running it, not by reading it. They are the reason the graph looks the
-way it does, and most of them would be quiet in production rather than loud.
+A different model: `python scripts/build_workflow.py --provider anthropic`, then redeploy.
 
-| What happened | Why | What it cost |
-|---|---|---|
-| Every Notion query returned 404 | a database has two ids — the database id and the data-source id, and the REST API takes only the first | looks exactly like a permissions problem |
-| Webhook never registered | a Webhook node's path is `parameters.path`, not `options.path` | — |
-| A node read a table that had not been fetched | two branches into one node does **not** make n8n wait for both | — |
-| No topics found, no error | a Notion query answers with **one** object holding `results`, not N items | reads as "nothing is active" |
-| Source metadata vanished mid-flow | the XML node replaces the whole item with what it parsed; so does an HTTP node, and so does the Telegram node | three separate bugs, one cause |
-| One dead feed killed the whole morning | a publisher dropped its RSS and started serving an HTML page at the same address — no 404 | everyone loses the brief because one site redesigned |
-| Every verdict came back empty | the model would not copy 32-character hex ids; it now gets `t1`…`t6` and they are mapped back in code | the reasons described real matches while the topic was blank |
-| The seen-index stayed empty | `Commit seen` read its input, and the Telegram node before it had replaced the item | **the worst one**: the brief would have looked fine and repeated the same articles daily |
-| Redeploying wiped the memory | a freshly built `workflow.json` has no `staticData` | a week of articles would return after every deploy |
-| One malformed model answer ended the run | no retry, no fallback | both model calls now retry once and degrade instead of crashing |
-| The "read the original" line was not a link | Telegram refuses to linkify `localhost` | the digest arrived unreadable |
-| An n8n advert under every brief | the Telegram node appends its own attribution unless told not to | — |
+The digest's language is a Settings row. `en` by default, and the model gets told the language by
+name. Everything else about the system stays in English.
 
-## Honest notes
+Thresholds, windows, muted words, the time of day, going on holiday: none of that is in the code.
 
-- Built for one person. No multi-tenancy, and adding it is not a small change.
-- It does not read past paywalls; those sources are judged on a headline and an excerpt.
-- Similarity is keywords and titles, not embeddings.
-- The seen-index holds thirty days.
-- Reddit now blocks unauthenticated JSON requests from most hosts, so the `reddit` adapter needs your
-  own credentials to be useful.
-- The full list is in [LIMITATIONS.md](LIMITATIONS.md).
+## Things that broke while I was building this
+
+All of these came from running it, not from reading it. Most of them would have been quiet in
+production rather than loud, which is the annoying kind.
+
+| What happened | Why |
+|---|---|
+| Every Notion query came back 404 | a database has two ids, and the REST API only takes one of them. Looks exactly like a permissions problem |
+| The webhook was never registered | a Webhook node's path goes in `parameters.path`, not `options.path` |
+| A node read a table that had not been fetched yet | two branches into one node does not make n8n wait for both |
+| No topics found, no error either | a Notion query answers with one object containing `results`, not N items |
+| Source metadata kept vanishing | HTTP Request, the XML node and the Telegram node all replace the item they are given. Three bugs, one cause |
+| One dead feed killed the whole morning | a publisher dropped its RSS and started serving an HTML page at the same address. No 404, nothing |
+| Every verdict came back empty | the model would not copy 32-character hex ids. It gets `t1`, `t2` now and they get mapped back in code |
+| The memory never filled up | `Commit seen` read its own input, and the Telegram node before it had already replaced it. This is the bad one: the brief would have looked completely fine and repeated the same articles every day |
+| Redeploying wiped that memory | a freshly built `workflow.json` has no `staticData` |
+| One malformed model answer ended the run | no retry. Both model calls retry once now and carry on without that chunk |
+| "Read the original" was not a link | Telegram will not linkify localhost |
+| An n8n advert under every brief | the Telegram node appends its own footer unless you tell it not to |
+| Renaming a Notion select option emptied it everywhere | you have to keep the option's id. Strip it and Notion makes new options and silently clears every page using the old ones |
+
+## Worth knowing before you try it
+
+It is built for one person. There is no multi-tenancy and adding it is not a small job.
+
+It does not get past paywalls. Those sources get judged on a headline and two lines of excerpt.
+
+Similarity is keywords and titles, not embeddings, so two write-ups of the same event with very
+different headlines will both come through.
+
+The memory holds thirty days.
+
+Reddit blocks unauthenticated JSON from most hosts now, so that adapter needs your own credentials to
+be much use.
+
+The rest is in [LIMITATIONS.md](LIMITATIONS.md).
 
 MIT licensed. Fork it, point it at your own Notion, and tell it what you actually want to read.
