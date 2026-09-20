@@ -17,6 +17,8 @@ the one to open when something does not work.
 | `ANTHROPIC_API_KEY` | <https://console.anthropic.com/settings/keys> | only for `--provider anthropic` |
 | `TELEGRAM_BOT_TOKEN` | @BotFather | nothing is delivered |
 | `TELEGRAM_CHAT_ID` | `python scripts/telegram_chat_id.py` | the brief has no addressee |
+| `TIMEZONE` | your own, e.g. `Europe/Berlin` | schedules run on UTC, so `Brief time` 05:00 in the Settings table means 05:00 UTC — for most people, the middle of the night |
+| `N8N_PORT` | only if 5678 is taken | `docker compose up` fails on a port that is in use |
 
 `.env` is in `.gitignore`, and so is `.deploy-state.json`, which holds the ids of the credentials and
 workflows that `deploy.py` created. Neither is ever written into `workflow.json`: the graph carries
